@@ -1,12 +1,12 @@
 import MDAvatar from "/components/MDAvatar";
 import Icon from "@mui/material/Icon";
-import { user, logout } from "../context/AuthContext";
 import profilePicture from "/assets/images/team-3.jpg";
+
 
 const routes = [
   {
     type: "collapse",
-    name: user ? `${user?.user?.first_name} ${user?.user?.last_name}` : "Login",
+    name: "Profile",
     key: "brooklyn-alice",
     icon: <MDAvatar src={profilePicture.src} alt="Brooklyn Alice" size="sm" />,
     collapse: [
@@ -23,7 +23,7 @@ const routes = [
       {
         name: "Logout",
         key: "logout",
-        route: { logout },
+        route: "",
       },
     ],
   },
