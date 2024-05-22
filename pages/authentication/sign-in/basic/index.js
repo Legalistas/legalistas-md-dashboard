@@ -21,24 +21,39 @@ import MDButton from "/components/MDButton";
 
 // Authentication layout components
 import BasicLayout from "/pagesComponents/authentication/components/BasicLayout";
-import { useAuth } from '../../../../context/AuthContext';
+import { useAuth } from "../../../../context/AuthContext";
 
 // Images
 import bgImage from "/assets/images/bg-sign-in-basic.jpeg";
-import { button } from '/assets/theme-dark/components/button';
+import { button } from "/assets/theme-dark/components/button";
+import Api from "../../../../services/api";
+import { useRouter } from "next/router";
 
 function Basic() {
   const [rememberMe, setRememberMe] = useState(false);
-
+  const { setUser } = useAuth();
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
+  const { push } = useRouter();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { login, user, loading, error, logout } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    login(email, password);
+
+    try {
+      const resp = await Api.post("/login", { email, password }); // Enviar datos de inicio de sesión al backend
+      if (resp.status === 200) {
+        const { user, token } = resp.data;
+        localStorage.setItem("token", token); // Guardar el token en localStorage
+        setUser(user); // Establecer el usuario en el contexto de autenticación
+        push("/dashboards/analytics"); // Redirigir al usuario a la página de perfil
+        console.log(user, token);
+      }
+    } catch (error) {
+      // Manejar errores de inicio de sesión
+      console.log(error);
+    }
   };
 
   return (
@@ -99,16 +114,24 @@ function Basic() {
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
-              <MDInput type="email"
+              <MDInput
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                required label="Email" fullWidth />
+                required
+                label="Email"
+                fullWidth
+              />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password"
+              <MDInput
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required label="Password" fullWidth />
+                required
+                label="Password"
+                fullWidth
+              />
             </MDBox>
             <MDBox display="flex" alignItems="center" ml={-1}>
               <Switch checked={rememberMe} onChange={handleSetRememberMe} />
@@ -123,7 +146,12 @@ function Basic() {
               </MDTypography>
             </MDBox>
             <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="dark" fullWidth onClick={handleSubmit}>
+              <MDButton
+                variant="gradient"
+                color="dark"
+                fullWidth
+                onClick={handleSubmit}
+              >
                 sign in
               </MDButton>
             </MDBox>

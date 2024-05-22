@@ -18,7 +18,7 @@ import {
 } from "/context";
 
 //Contexto de los datos de usuario
-import { AuthProvider } from "../context/AuthContext";
+import { AuthProvider, useAuth } from '../context/AuthContext'
 
 // Images
 import favicon from "/assets/images/favicon.png";
@@ -41,6 +41,10 @@ function Main({ Component, pageProps }) {
   } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const { pathname } = useRouter();
+
+  const { user, setUser } = useAuth()
+
+  console.log(user);
 
   // Open sidenav when mouse enter on mini sidenav
   const handleOnMouseEnter = () => {
