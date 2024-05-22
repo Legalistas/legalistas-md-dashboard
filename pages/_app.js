@@ -1,18 +1,3 @@
-/**
-=========================================================
-* NextJS Material Dashboard 2 PRO - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/nextjs-material-dashboard-pro
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState, useEffect, useMemo } from "react";
 
 import Head from "next/head";
@@ -57,6 +42,9 @@ import {
   setMiniSidenav,
   setOpenConfigurator,
 } from "/context";
+
+//Contexto de los datos de usuario
+import { AuthProvider } from '../context/AuthContext';
 
 // Images
 import favicon from "/assets/images/favicon.png";
@@ -152,8 +140,32 @@ function Main({ Component, pageProps }) {
   );
 
   return direction === "rtl" ? (
-    <CacheProvider value={rtlCache}>
-      <ThemeProvider theme={darkMode ? themeDarkRTL : themeRTL}>
+    <AuthProvider>
+      <CacheProvider value={rtlCache}>
+        <ThemeProvider theme={darkMode ? themeDarkRTL : themeRTL}>
+          <CssBaseline />
+          <Component {...pageProps} />
+          {layout === "dashboard" && (
+            <>
+              <Sidenav
+                color={sidenavColor}
+                brand={brandIcon}
+                brandName="Material Dashboard PRO"
+                routes={routes}
+                onMouseEnter={handleOnMouseEnter}
+                onMouseLeave={handleOnMouseLeave}
+              />
+              <Configurator />
+              {configsButton}
+            </>
+          )}
+          {layout === "vr" && <Configurator />}
+        </ThemeProvider>
+      </CacheProvider>
+    </AuthProvider>
+  ) : (
+    <AuthProvider>
+      <ThemeProvider theme={darkMode ? themeDark : theme}>
         <CssBaseline />
         <Component {...pageProps} />
         {layout === "dashboard" && (
@@ -172,27 +184,7 @@ function Main({ Component, pageProps }) {
         )}
         {layout === "vr" && <Configurator />}
       </ThemeProvider>
-    </CacheProvider>
-  ) : (
-    <ThemeProvider theme={darkMode ? themeDark : theme}>
-      <CssBaseline />
-      <Component {...pageProps} />
-      {layout === "dashboard" && (
-        <>
-          <Sidenav
-            color={sidenavColor}
-            brand={brandIcon}
-            brandName="Material Dashboard PRO"
-            routes={routes}
-            onMouseEnter={handleOnMouseEnter}
-            onMouseLeave={handleOnMouseLeave}
-          />
-          <Configurator />
-          {configsButton}
-        </>
-      )}
-      {layout === "vr" && <Configurator />}
-    </ThemeProvider>
+    </AuthProvider>
   );
 }
 

@@ -1,18 +1,3 @@
-/**
-=========================================================
-* NextJS Material Dashboard 2 PRO - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/nextjs-material-dashboard-pro
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 /** 
   All of the routes for the NextJS Material Dashboard 2 PRO are added here,
   You can add a new route, customize the routes and delete the routes here.
@@ -40,13 +25,16 @@ import MDAvatar from "/components/MDAvatar";
 // @mui icons
 import Icon from "@mui/material/Icon";
 
+//Data extraida del contexto :D
+import { user, logout } from "../context/AuthContext"
+
 // Images
 import profilePicture from "/assets/images/team-3.jpg";
 
 const routes = [
   {
     type: "collapse",
-    name: "Brooklyn Alice",
+    name: user ? `${user?.user?.first_name} ${user?.user?.last_name}` : "No se ha iniciado sesión",
     key: "brooklyn-alice",
     icon: <MDAvatar src={profilePicture.src} alt="Brooklyn Alice" size="sm" />,
     collapse: [
@@ -63,7 +51,7 @@ const routes = [
       {
         name: "Logout",
         key: "logout",
-        route: "/authentication/sign-in/basic",
+        route: {logout},
       },
     ],
   },
