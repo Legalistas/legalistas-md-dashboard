@@ -23,13 +23,13 @@ export default styled(Drawer)(({ theme, ownerState }) => {
     ownerState;
 
   const sidebarWidth = 250;
-  const { transparent, gradients, white, background } = palette;
+  const { transparent, white, background, backgroundLegalistas } = palette;
   const { xxl } = boxShadows;
-  const { pxToRem, linearGradient } = functions;
+  const { pxToRem } = functions;
 
   let backgroundValue = darkMode
     ? background.sidenav
-    : linearGradient(gradients.dark.main, gradients.dark.state);
+    : backgroundLegalistas.default;
 
   if (transparentSidenav) {
     backgroundValue = transparent.main;
