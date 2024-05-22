@@ -1,5 +1,4 @@
-// context/AuthContext.js
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
@@ -11,31 +10,40 @@ export const AuthProvider = ({ children }) => {
     const [error, setError] = useState(null);
     const router = useRouter();
 
+    useEffect(() => {
+        // Recuperar los datos del usuario de localStorage cuando la aplicación se carga
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+    }, []);
+
     const login = async (email, password) => {
         setLoading(true);
         try {
             const response = await axios.post('https://api.legalistas.com.ar/api/v1/login', { email, password });
-            // setUser(response.data); y esto es por que no estoy seguro si en algun momento deja de funcar lo de abajo
-
-            // Esto y el if guarda en la cache del navegador al usuario y en user :D
-            const storedUser = localStorage.getItem('user');
-            if (storedUser) {
-                setUser(JSON.parse(storedUser));
-                console.log(localStorage.getItem('user'));
+            if (response.data) {
+                setUser(response.data);
+                localStorage.setItem('user', JSON.stringify(response.data)); // Guardar en localStorage
+            } else {
+                console.log('Response data is null');
             }
-            setError(null);
-
-            router.push("/")
         } catch (error) {
             setError(error.response ? error.response.data : 'Network Error');
         } finally {
             setLoading(false);
+            router.push("/")
         }
     };
 
     const logout = () => {
         setUser(null);
+        localStorage.removeItem('user'); // Remover de localStorage
     };
+
+    useEffect(() => {
+        console.log(user); // Verificar los cambios en el estado de user
+    }, [user]);
 
     return (
         <AuthContext.Provider value={{ user, login, logout, loading, error }}>
