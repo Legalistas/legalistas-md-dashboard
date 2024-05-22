@@ -1,50 +1,24 @@
-import { useState, useEffect, useMemo } from "react";
-
+import { useState, useEffect } from "react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-
-// @emotion
 import createCache from "@emotion/cache";
-
-// @emotion/react components
 import { CacheProvider } from "@emotion/react";
-
-// @mui material components
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import Icon from "@mui/material/Icon";
 
-// NextJS Material Dashboard 2 PRO components
-import MDBox from "/components/MDBox";
-
-// NextJS Material Dashboard 2 PRO examples
 import Sidenav from "/examples/Sidenav";
-import Configurator from "/examples/Configurator";
-
-// NextJS Material Dashboard 2 PRO themes
 import theme from "/assets/theme";
-import themeRTL from "/assets/theme/theme-rtl";
-
-// NextJS Material Dashboard 2 PRO Dark Mode themes
 import themeDark from "/assets/theme-dark";
-import themeDarkRTL from "/assets/theme-dark/theme-rtl";
-
-// RTL plugins
-import rtlPlugin from "stylis-plugin-rtl";
-
-// NextJS Material Dashboard 2 PRO routes
 import routes from "/routes";
 
-// NextJS Material Dashboard 2 PRO Context Provider
 import {
   MaterialUIControllerProvider,
   useMaterialUIController,
   setMiniSidenav,
-  setOpenConfigurator,
 } from "/context";
 
 //Contexto de los datos de usuario
-import { AuthProvider } from '../context/AuthContext';
+import { AuthProvider } from "../context/AuthContext";
 
 // Images
 import favicon from "/assets/images/favicon.png";
@@ -59,27 +33,14 @@ function Main({ Component, pageProps }) {
   const [controller, dispatch] = useMaterialUIController();
   const {
     miniSidenav,
-    direction,
     layout,
-    openConfigurator,
     sidenavColor,
     transparentSidenav,
     whiteSidenav,
     darkMode,
   } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
-  const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useRouter();
-
-  // Cache for the rtl
-  useMemo(() => {
-    const cacheRtl = createCache({
-      key: "rtl",
-      stylisPlugins: [rtlPlugin],
-    });
-
-    setRtlCache(cacheRtl);
-  }, []);
 
   // Open sidenav when mouse enter on mini sidenav
   const handleOnMouseEnter = () => {
@@ -97,15 +58,6 @@ function Main({ Component, pageProps }) {
     }
   };
 
-  // Change the openConfigurator state
-  const handleConfiguratorOpen = () =>
-    setOpenConfigurator(dispatch, !openConfigurator);
-
-  // Setting the dir attribute for the body element
-  useEffect(() => {
-    document.body.setAttribute("dir", direction);
-  }, [direction]);
-
   // Setting page scroll to 0 when changing the route
   useEffect(() => {
     document.documentElement.scrollTop = 0;
@@ -115,55 +67,7 @@ function Main({ Component, pageProps }) {
   const brandIcon =
     (transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite;
 
-  const configsButton = (
-    <MDBox
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      width="3.25rem"
-      height="3.25rem"
-      bgColor="white"
-      shadow="sm"
-      borderRadius="50%"
-      position="fixed"
-      right="2rem"
-      bottom="2rem"
-      zIndex={99}
-      color="dark"
-      sx={{ cursor: "pointer" }}
-      onClick={handleConfiguratorOpen}
-    >
-      <Icon fontSize="small" color="inherit">
-        settings
-      </Icon>
-    </MDBox>
-  );
-
-  return direction === "rtl" ? (
-    <AuthProvider>
-      <CacheProvider value={rtlCache}>
-        <ThemeProvider theme={darkMode ? themeDarkRTL : themeRTL}>
-          <CssBaseline />
-          <Component {...pageProps} />
-          {layout === "dashboard" && (
-            <>
-              <Sidenav
-                color={sidenavColor}
-                brand={brandIcon}
-                brandName="Material Dashboard PRO"
-                routes={routes}
-                onMouseEnter={handleOnMouseEnter}
-                onMouseLeave={handleOnMouseLeave}
-              />
-              <Configurator />
-              {configsButton}
-            </>
-          )}
-          {layout === "vr" && <Configurator />}
-        </ThemeProvider>
-      </CacheProvider>
-    </AuthProvider>
-  ) : (
+  return (
     <AuthProvider>
       <ThemeProvider theme={darkMode ? themeDark : theme}>
         <CssBaseline />
@@ -178,11 +82,8 @@ function Main({ Component, pageProps }) {
               onMouseEnter={handleOnMouseEnter}
               onMouseLeave={handleOnMouseLeave}
             />
-            <Configurator />
-            {configsButton}
           </>
         )}
-        {layout === "vr" && <Configurator />}
       </ThemeProvider>
     </AuthProvider>
   );
