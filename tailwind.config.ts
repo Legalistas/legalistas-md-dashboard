@@ -1,14 +1,14 @@
 import type { Config } from "tailwindcss";
 import defaultTheme from "tailwindcss/defaultTheme";
-import {nextui} from "@nextui-org/react";
+import { nextui } from "@nextui-org/react";
 
 /** @type {import('tailwindcss').Config} */
 const config = {
   content: [
-      "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-      "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-      "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     fontFamily: {
@@ -233,6 +233,9 @@ const config = {
         "icon-copy": 'url("../images/icon/icon-copy-alt.svg")',
       },
       transitionProperty: { width: "width", stroke: "stroke" },
+      borderRadius: {
+        default: "0.75rem",
+      },
       borderWidth: {
         6: "6px",
         10: "10px",
@@ -333,7 +336,7 @@ const config = {
     },
   },
   darkMode: "class",
-  plugins: [nextui()]
-}
+  plugins: [nextui()],
+};
 
 export default config;
