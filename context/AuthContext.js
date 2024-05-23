@@ -9,6 +9,18 @@ export const AuthProvider = ({ children }) => {
   const [user, _setUser] = useState(null);
 
   useEffect(() => {
+
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    _setUser(storedUser);
+  }, []); // Se ejecuta solo una vez al montar el componente
+
+  // set user to local storage
+  const setUser = (user) => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+
     // Accede a localStorage solo en el lado del cliente
     const storedUser = localStorage.getItem('user');
     if (storedUser) {

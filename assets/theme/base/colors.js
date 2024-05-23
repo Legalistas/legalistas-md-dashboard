@@ -1,10 +1,29 @@
+/**
+=========================================================
+* NextJS Material Dashboard 2 PRO - v2.2.0
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/nextjs-material-dashboard-pro
+* Copyright 2023 Creative Tim (https://www.creative-tim.com)
+
+Coded by www.creative-tim.com
+
+ =========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+*/
+
+/**
+ * The base colors for the NextJS Material Dashboard 2 PRO.
+ * You can add new color using this file.
+ * You can customized the colors for the entire NextJS Material Dashboard 2 PRO using thie file.
+ */
+
 const colors = {
   background: {
     default: "#f0f2f5",
   },
-  backgroundLegalistas: {
-    default: "#09A7B2",
-  },
+
   text: {
     main: "#7b809a",
     focus: "#7b809a",
