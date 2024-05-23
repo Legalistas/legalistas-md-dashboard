@@ -1,16 +1,31 @@
-export const login = async (email, password) => {
-    const response = await fetch('https://api.legalistas.com.ar/api/v1/login', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-    });
+import Axios from "axios";
 
-    if (!response.ok) {
-        throw new Error('Error en la autenticación');
+const Api = Axios.create({
+  baseURL: 'https://api.legalistas.com.ar/api/v1',
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+});
+
+// Agregar interceptor para incluir el token de autorización en las solicitudes
+const requestInterceptor = Api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-    const data = await response.json();
-    return data;
-};
+console.log("Interceptors:", Api.interceptors);
+
+// Eliminar el interceptor de solicitud si es necesario
+// Api.interceptors.request.eject(requestInterceptor);
+
+export default Api;
