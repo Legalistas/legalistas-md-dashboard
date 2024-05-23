@@ -1,7 +1,6 @@
 "use client"
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 // import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
@@ -36,19 +35,15 @@ const SignIn = () => {
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="px-26 py-17.5 text-center">
               <Link className="mb-5.5 inline-block" href="/">
-                <Image
-                  className="hidden dark:block"
+                <img
+                  className="hidden dark:block h-[32px] w-[176px]"
                   src={"/images/logo/logo.svg"}
                   alt="Logo"
-                  width={176}
-                  height={32}
                 />
-                <Image
-                  className="dark:hidden"
+                <img
+                  className="dark:hidden h-[32px] w-[176px]"
                   src={"/images/logo/logo-dark.svg"}
                   alt="Logo"
-                  width={176}
-                  height={32}
                 />
               </Link>
 
