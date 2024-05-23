@@ -27,9 +27,11 @@ import reportsLineChartData from "/pagesComponents/dashboards/analytics/data/rep
 import booking1 from "/assets/images/products/product-1-min.jpg";
 import booking2 from "/assets/images/products/product-2-min.jpg";
 import booking3 from "/assets/images/products/product-3-min.jpg";
+import { useAuth } from "../../../context/AuthContext";
 
 function Analytics() {
   const { sales, tasks } = reportsLineChartData;
+  const { user } = useAuth();
 
   // Action buttons for the BookingCard
   const actionButtons = (

@@ -29,8 +29,11 @@ import SalesTable from "/examples/Tables/SalesTable";
 
 // Data
 import salesTableData from "/pagesComponents/dashboards/analytics/components/SalesByCountry/data/salesTableData";
+import { useAuth } from "../../../../../context/AuthContext";
 
 function SalesByCountry() {
+  const { user } = useAuth();
+  const fullName = `${user.first_name} ${user.last_name}`;
   useEffect(() => {
     const mapContainer = document.getElementById("map");
     const jsVectorMap = require("jsvectormap");
@@ -106,7 +109,7 @@ function SalesByCountry() {
           </Icon>
         </MDBox>
         <MDTypography variant="h6" sx={{ mt: 2, mb: 1, ml: 2 }}>
-          Sales by Country
+          Sales by  {fullName}
         </MDTypography>
       </MDBox>
       <MDBox p={2}>

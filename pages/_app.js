@@ -42,8 +42,10 @@ import {
   setMiniSidenav,
   setOpenConfigurator,
 } from "/context";
+
 import { AuthProvider } from "../context/AuthContext";
 import ProtectedRoutes from "../components/ProtectedRoutes";
+
 // Images
 import favicon from "/assets/images/favicon.png";
 import appleIcon from "/assets/images/apple-icon.png";
