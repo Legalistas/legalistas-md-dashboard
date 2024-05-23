@@ -1,11 +1,12 @@
 "use client"
-import React, {useState} from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 // import { Metadata } from "next";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import { useAuth } from '../../../contexts/AuthContext';
+import { Button } from "@nextui-org/react";
 
 // export const metadata: Metadata = {
 //   title: "Next.js SignIn Page | TailAdmin - Next.js Dashboard Template",
@@ -14,17 +15,17 @@ import { useAuth } from '../../../contexts/AuthContext';
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const { signIn } = useAuth();
+  const [password, setPassword] = useState('');
+  const { signIn } = useAuth();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            await signIn(email, password);
-        } catch (error) {
-            console.error('Error en la autenticación:', error);
-        }
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await signIn(email, password);
+    } catch (error) {
+      console.error('Error en la autenticación:', error);
+    }
+  };
 
   return (
     <DefaultLayout>
@@ -268,6 +269,9 @@ const SignIn = () => {
                     className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
                   />
                 </div>
+                <Button color="primary">
+                  Button
+                </Button>
 
                 <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
                   <span>
