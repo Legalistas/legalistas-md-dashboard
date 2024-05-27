@@ -92,6 +92,7 @@ const TaskHeader = () => {
           </button>
         </div>
 
+        {/* Add task button */}
         <div>
           <button
             ref={trigger}
