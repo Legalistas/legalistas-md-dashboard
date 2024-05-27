@@ -3,31 +3,46 @@ import statesData from './mockData/states.json'; // Importar datos de states.jso
 import localitiesData from './mockData/localities.json'; // Importar datos de localities.json
 import abogadosData from './mockData/Abogados.json'; // Importar datos de Abogados.json
 import abogadosInternosData from './mockData/AbogadosInternos.json'; // Importar datos de AbogadosInternos.json
+import TaskKanban from "./Tasks/KanbanTasks"
 
 
 
 const TaskPopup = (props) => {
   const [files, setFiles] = useState(null);
+  const [selectedColumn, setSelectedColumn] = useState("1-NUEVA CONSULTA");
 
   // Estado para manejar los datos del formulario
   const [formData, setFormData] = useState({
-    apellido: '',
-    nombre: '',
-    provincia: '',
-    ciudad: '',
-    correoElectronico: '',
-    caracteristicaTelefono: '',
-    telefono: '',
-    abogadoResponsable: '',
-    abogadoInterno: '',
-    prioridad: '',
-    canalComunicacion: '',
-    motivoConsulta: '',
-    lesionesPersonales: '',
-    tieneART: '',
+    username: '',
+    email: '',
+    province: '',
+    city: '',
+    service: '',
+    phone: '',
+    column: selectedColumn
   });
 
-  
+  // Lista de Servicios
+  const servicio = [
+    "Accidente de transito",
+    "Accidente de trabajo",
+    "Daños materiales",
+  ]
+
+  // Lista de columnas para el kanban
+  const columns = [
+    "1-NUEVA CONSULTA",
+    "2-REUNIÓN A CONCRETAR",
+    "3-REUNIÓN COORDINADA",
+    "4-EN TRATAMIENTO",
+    "5-PENDIENTE DE CONFIRMACIÓN",
+    "6-COORDINAR REUNIÓN PODER",
+    "7-REUNIÓN DE PODER",
+    "8-PENDIENTE PODER",
+    "9-GANADO - TRAJO PODER",
+    "10-PERDIDA"
+  ];
+
   // Función para manejar el cambio en los inputs del formulario
   const handleInputChange = (e) => {
     setFormData({
@@ -64,34 +79,28 @@ const TaskPopup = (props) => {
         </button>
 
         <form action="#">
+
+          {/* /////////////////////// INICIO FORMULARIO \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
+
+          {/* /////////////////////// Cliente \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="apellido" className="mb-2.5 block font-medium text-black dark:text-white">
-              Apellido
+            <label htmlFor="provincia" className="mb-2.5 block font-medium text-black dark:text-white">
+              Cliente
             </label>
-            <input
-              type="text"
-              name="apellido"
-              id="apellido"
-              placeholder="Ingrese su apellido"
+            <select
+              name="provincia"
+              id="provincia"
               className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
               onChange={handleInputChange}
-            />
+            >
+              {/* Options from states.json */}
+              {statesData.map((state) => (
+                <option key={state.id} value={state.name}>{state.name}</option>
+              ))}
+            </select>
           </div>
 
-          <div className="mb-5">
-            <label htmlFor="nombre" className="mb-2.5 block font-medium text-black dark:text-white">
-              Nombre
-            </label>
-            <input
-              type="text"
-              name="nombre"
-              id="nombre"
-              placeholder="Ingrese su nombre"
-              className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
-              onChange={handleInputChange}
-            />
-          </div>
-
+          {/* /////////////////////// Provincia \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
             <label htmlFor="provincia" className="mb-2.5 block font-medium text-black dark:text-white">
               Provincia
@@ -109,6 +118,7 @@ const TaskPopup = (props) => {
             </select>
           </div>
 
+          {/* /////////////////////// Ciudad \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
             <label htmlFor="ciudad" className="mb-2.5 block font-medium text-black dark:text-white">
               Ciudad
@@ -126,6 +136,7 @@ const TaskPopup = (props) => {
             </select>
           </div>
 
+          {/* /////////////////////// Correo Electronico \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
             <label htmlFor="correoElectronico" className="mb-2.5 block font-medium text-black dark:text-white">
               Correo Electrónico
@@ -140,85 +151,41 @@ const TaskPopup = (props) => {
             />
           </div>
 
+          {/* /////////////////////// Teléfono \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
             <label htmlFor="caracteristicaTelefono" className="mb-2.5 block font-medium text-black dark:text-white">
-              Característica de Teléfono
+              Teléfono
             </label>
             <input
               type="tel"
               name="caracteristicaTelefono"
               id="caracteristicaTelefono"
-              placeholder="Ingrese la característica de su teléfono"
+              placeholder="Ingrese su teléfono"
               className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
               onChange={handleInputChange}
             />
           </div>
 
-          <div className="mb-5">
-            <label htmlFor="telefono" className="mb-2.5 block font-medium text-black dark:text-white">
-              Teléfono
-            </label>
-            <input
-              type="tel"
-              name="telefono"
-              id="telefono"
-              placeholder="Ingrese su número de teléfono"
-              className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
-              onChange={handleInputChange}
-            />
-          </div>
 
+          {/* /////////////////////// Servicio \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="abogadoResponsable" className="mb-2.5 block font-medium text-black dark:text-white">
-              Abogado Responsable
+            <label htmlFor="provincia" className="mb-2.5 block font-medium text-black dark:text-white">
+              Servicío
             </label>
             <select
-              name="abogadoResponsable"
-              id="abogadoResponsable"
+              name="provincia"
+              id="provincia"
               className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
               onChange={handleInputChange}
             >
-              {/* Options from Abogados.json */}
-              {abogadosData.map((abogado) => (
-                <option key={abogado.id} value={abogado.name}>{abogado.name}</option>
+              {/* Options from states.json */}
+              {servicio.map((service) => (
+                <option key={service} value={service}>{service}</option>
               ))}
             </select>
           </div>
 
-          <div className="mb-5">
-            <label htmlFor="abogadoInterno" className="mb-2.5 block font-medium text-black dark:text-white">
-              Abogado Interno
-            </label>
-            <select
-              name="abogadoInterno"
-              id="abogadoInterno"
-              className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
-              onChange={handleInputChange}
-            >
-              {/* Options from AbogadosInternos.json */}
-              {abogadosInternosData.map((abogado) => (
-                <option key={abogado.id} value={abogado.name}>{abogado.name}</option>
-              ))}
-            </select>
-          </div>
-
-          <div className="mb-5">
-            <label htmlFor="prioridad" className="mb-2.5 block font-medium text-black dark:text-white">
-              Prioridad
-            </label>
-            <select
-              name="prioridad"
-              id="prioridad"
-              className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
-              onChange={handleInputChange}
-            >
-              <option value="baja">Baja</option>
-              <option value="media">Media</option>
-              <option value="alta">Alta</option>
-              <option value="muy alta">Muy Alta</option>
-            </select>
-          </div>
-
+          {/* /////////////////////// Canal de Comunicación \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
             <label htmlFor="canalComunicacion" className="mb-2.5 block font-medium text-black dark:text-white">
               Canal de Comunicación
@@ -243,50 +210,21 @@ const TaskPopup = (props) => {
             </select>
           </div>
 
-          <div className="mb-5">
-            <label htmlFor="motivoConsulta" className="mb-2.5 block font-medium text-black dark:text-white">
-              Motivo Consulta
-            </label>
-            <select
-              name="motivoConsulta"
-              id="motivoConsulta"
-              className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
-              onChange={handleInputChange}
-            >
-              <option value="accidente de trabajo">Accidente de Trabajo</option>
-              <option value="accidentes de transito">Accidentes de Tránsito</option>
-            </select>
-          </div>
 
-          <div className="mb-5">
-            <label htmlFor="lesionesPersonales" className="mb-2.5 block font-medium text-black dark:text-white">
-              ¿En el accidente han ocurrido lesiones personales?
-            </label>
+          {/* /////////////////////// Selector de columna por las dudas \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
+          {/* <div className="mb-5">
+            <label htmlFor="column" className="mb-2.5 block font-medium text-black dark:text-white">Columna</label>
             <select
-              name="lesionesPersonales"
-              id="lesionesPersonales"
-              className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
-              onChange={handleInputChange}
+              value={selectedColumn} // Enlaza el valor del select al estado selectedColumn
+              onChange={(e) => setSelectedColumn(e.target.value)} // Actualiza el estado selectedColumn cuando el select cambia
+              className="p-2 border w-full border-gray-300 rounded"
             >
-              <option value="si">Sí</option>
-              <option value="no">No</option>
+              {columns.map(column => (
+                <option key={column} value={column}>{column}</option>
+              ))}
             </select>
-          </div>
+          </div> */}
 
-          <div className="mb-5">
-            <label htmlFor="tieneART" className="mb-2.5 block font-medium text-black dark:text-white">
-              ¿Tiene ART?
-            </label>
-            <select
-              name="tieneART"
-              id="tieneART"
-              className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
-              onChange={handleInputChange}
-            >
-              <option value="si">Sí</option>
-              <option value="no">No</option>
-            </select>
-          </div>
 
           {/* Botón de envío */}
           <button className="flex w-full items-center justify-center gap-2 rounded bg-primary px-4.5 py-2.5 font-medium text-white hover:bg-opacity-90">

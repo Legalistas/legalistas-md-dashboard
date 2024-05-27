@@ -69,7 +69,7 @@ const TaskKanban: React.FC = () => {
         <div className="mt-9 flex overflow-x-auto gap-7.5 sm:grid-cols-2 xl:grid-cols-3">
           {columns.map(column => (
             <div key={column} className="swim-lane flex flex-col gap-5.5">
-              <h4 className="text-xl font-semibold text-black dark:text-white">
+              <h4 className="text-xl font-semibold w-[400px] text-black dark:text-white">
                 {column}
               </h4>
               {tasks
@@ -92,7 +92,7 @@ const TaskKanban: React.FC = () => {
           ))}
         </div>
 
-        <div className="mt-9 flex flex-col gap-5.5">
+        {/* <div className="mt-9 flex flex-col gap-5.5">
           <input
             type="text"
             value={newTaskTitle} // Enlaza el valor del input al estado newTaskTitle
@@ -115,7 +115,9 @@ const TaskKanban: React.FC = () => {
           >
             Agregar Tarea
           </button>
-        </div>
+        </div> */}
+
+
       </div>
     </>
   );
