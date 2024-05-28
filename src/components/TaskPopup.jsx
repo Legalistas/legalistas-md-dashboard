@@ -1,33 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import statesData from './mockData/states.json'; // Importar datos de states.json
-import localitiesData from './mockData/localities.json'; // Importar datos de localities.json
-import abogadosData from './mockData/Abogados.json'; // Importar datos de Abogados.json
-import abogadosInternosData from './mockData/AbogadosInternos.json'; // Importar datos de AbogadosInternos.json
-import TaskKanban from "./Tasks/KanbanTasks"
+import { create_opportunity } from "@/services/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 
 
 const TaskPopup = (props) => {
   const [files, setFiles] = useState(null);
   const [selectedColumn, setSelectedColumn] = useState("1-NUEVA CONSULTA");
+  const { user } = useAuth();
+  const [states, setStates] = useState([]);
+  const [localities, setLocalities] = useState([]);
+  const [filterLocalities, setFilterLocalities] = useState([]);
+  const [services, setServices] = useState([]);
+  const [source_channels, setSource_channels] = useState([]);
+
 
   // Estado para manejar los datos del formulario
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    province: '',
-    city: '',
-    service: '',
-    phone: '',
-    column: selectedColumn
+
+    status: "open",
+    state: "pending",
+    category_id: 1,
+    customer_id: 2,
+    seller_id: user.user.id,
+    internal_lawyer_id: 1,
+    external_lawyer_id: 2,
+    services: {
+      type: "",
+      personal_injuries: 0,
+      art: 0
+    },
+    source_channel: "Publicidad",
   });
 
-  // Lista de Servicios
-  const servicio = [
-    "Accidente de transito",
-    "Accidente de trabajo",
-    "Daños materiales",
-  ]
 
   // Lista de columnas para el kanban
   const columns = [
@@ -45,11 +51,71 @@ const TaskPopup = (props) => {
 
   // Función para manejar el cambio en los inputs del formulario
   const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    if (name === 'states') {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+
+      // Filter localities based on the selected state
+      const filteredLocalities = localities.filter(locality => locality.state_id === parseInt(value));
+      setFilterLocalities(filteredLocalities);
+    } else if (name === 'servicio') {
+      setFormData({
+        ...formData,
+        services: {
+          ...formData.services,
+          type: value,
+        },
+      });
+    } else if (name === 'personal_injuries') {
+      setFormData({
+        ...formData,
+        services: {
+          ...formData.services,
+          personal_injuries: parseInt(value),
+        },
+      });
+    } else if (name === 'art') {
+      setFormData({
+        ...formData,
+        services: {
+          ...formData.services,
+          art: parseInt(value),
+        },
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://api.legalistas.com.ar/v1/settings');
+        if (response.ok) {
+          const data = await response.json();
+          setStates(data.states);
+          setLocalities(data.localities);
+          setServices(data.services);
+          setSource_channels(data.source_channels);
+          // handle the data from the API response
+          console.log(data);
+        } else {
+          throw new Error('Failed to fetch data');
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []); // empty dependency array to run only once on component mount
 
   return (
     <div
@@ -78,18 +144,18 @@ const TaskPopup = (props) => {
           </svg>
         </button>
 
-        <form action="#">
+        <form action={() => create_opportunity(formData)}>
 
           {/* /////////////////////// INICIO FORMULARIO \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
 
           {/* /////////////////////// Cliente \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="provincia" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label htmlFor="client" className="mb-2.5 block font-medium text-black dark:text-white">
               Cliente
             </label>
             <select
-              name="provincia"
-              id="provincia"
+              name="client"
+              id="client"
               className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
               onChange={handleInputChange}
             >
@@ -102,35 +168,35 @@ const TaskPopup = (props) => {
 
           {/* /////////////////////// Provincia \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="provincia" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label htmlFor="states" className="mb-2.5 block font-medium text-black dark:text-white">
               Provincia
             </label>
             <select
-              name="provincia"
-              id="provincia"
+              name="states"
+              id="states"
               className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
               onChange={handleInputChange}
             >
-              {/* Options from states.json */}
-              {statesData.map((state) => (
-                <option key={state.id} value={state.name}>{state.name}</option>
+              {/* Options from api states constant */}
+              {states.map((state) => (
+                <option key={state.id} value={state.id}>{state.name}</option>
               ))}
             </select>
           </div>
 
           {/* /////////////////////// Ciudad \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="ciudad" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label htmlFor="localities" className="mb-2.5 block font-medium text-black dark:text-white">
               Ciudad
             </label>
             <select
-              name="ciudad"
-              id="ciudad"
+              name="localities"
+              id="localities"
               className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
               onChange={handleInputChange}
             >
               {/* Options from localities.json */}
-              {localitiesData.map((locality) => (
+              {filterLocalities.map((locality) => (
                 <option key={locality.id} value={locality.name}>{locality.name}</option>
               ))}
             </select>
@@ -169,20 +235,54 @@ const TaskPopup = (props) => {
 
           {/* /////////////////////// Servicio \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="provincia" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label htmlFor="servicio" className="mb-2.5 block font-medium text-black dark:text-white">
               Servicío
             </label>
             <select
-              name="provincia"
-              id="provincia"
+              name="servicio"
+              id="servicio"
               className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
               onChange={handleInputChange}
             >
-              {/* Options from states.json */}
-              {servicio.map((service) => (
-                <option key={service} value={service}>{service}</option>
+              {/* Options from api services constant */}
+              {services.map((service) => (
+                <option key={service.id} value={service.name}>{service.name}</option>
               ))}
             </select>
+          </div>
+
+          <div className="flex w-full gap-3">
+            {/* /////////////////////// Daños leves \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
+            <div className="mb-5 w-1/2">
+              <label htmlFor="personal_injuries" className="mb-2.5 block font-medium text-black dark:text-white">
+                Daños leves
+              </label>
+              <select
+                name="personal_injuries"
+                id="personal_injuries"
+                className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                onChange={handleInputChange}
+              >
+                <option value={1}>Si</option>
+                <option value={0}>No</option>
+              </select>
+            </div>
+
+            {/* /////////////////////// ART \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
+            <div className="mb-5 w-1/2">
+              <label htmlFor="art" className="mb-2.5 block font-medium text-black dark:text-white">
+                ART
+              </label>
+              <select
+                name="art"
+                id="art"
+                className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                onChange={handleInputChange}
+              >
+                <option value={1}>Si</option>
+                <option value={0}>No</option>
+              </select>
+            </div>
           </div>
 
           {/* /////////////////////// Canal de Comunicación \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
@@ -196,17 +296,10 @@ const TaskPopup = (props) => {
               className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
               onChange={handleInputChange}
             >
-              <option value="website">Website</option>
-              <option value="telemarketing">Telemarketing</option>
-              <option value="facebook">Facebook</option>
-              <option value="instagram">Instagram</option>
-              <option value="google">Google</option>
-              <option value="whatsapp">WhatsApp</option>
-              <option value="radio">Radio</option>
-              <option value="referido">Referido</option>
-              <option value="correo electronico">Correo Electrónico</option>
-              <option value="otros">Otros</option>
-              <option value="tiktok">TikTok</option>
+              {/* Options from source_channels */}
+              {source_channels.map((source_channels) => (
+                <option key={source_channels.id} value={source_channels.name}>{source_channels.name}</option>
+              ))}
             </select>
           </div>
 
