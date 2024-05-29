@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import statesData from './mockData/states.json'; // Importar datos de states.json
+import statesData from "./mockData/states.json"; // Importar datos de states.json
 import { create_opportunity } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
-
-
+import Modal from "./Crm/Components/Modal/Modal";
 
 const TaskPopup = (props) => {
   const [files, setFiles] = useState(null);
@@ -15,11 +14,13 @@ const TaskPopup = (props) => {
   const [services, setServices] = useState([]);
   const [source_channels, setSource_channels] = useState([]);
   const [formattedUsers, setFormattedUsers] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
 
   // Estado para manejar los datos del formulario
   const [formData, setFormData] = useState({
-
     status: "open",
     state: "pending",
     category_id: 1,
@@ -30,11 +31,10 @@ const TaskPopup = (props) => {
     services: {
       type: "Accidente de transito",
       personal_injuries: 0,
-      art: 0
+      art: 0,
     },
     source_channel: 0,
   });
-
 
   // Lista de columnas para el kanban
   const columns = [
@@ -47,28 +47,30 @@ const TaskPopup = (props) => {
     "7-REUNIÓN DE PODER",
     "8-PENDIENTE PODER",
     "9-GANADO - TRAJO PODER",
-    "10-PERDIDA"
+    "10-PERDIDA",
   ];
 
   // Función para manejar el cambio en los inputs del formulario
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === 'states') {
+    if (name === "states") {
       setFormData({
         ...formData,
         [name]: value,
       });
 
       // Filter localities based on the selected state
-      const filteredLocalities = localities.filter(locality => locality.state_id === parseInt(value));
+      const filteredLocalities = localities.filter(
+        (locality) => locality.state_id === parseInt(value),
+      );
       setFilterLocalities(filteredLocalities);
-    } else if (name === 'client') {
+    } else if (name === "client") {
       setFormData({
         ...formData,
         customer_id: value,
       });
-    } else if (name === 'servicio') {
+    } else if (name === "servicio") {
       setFormData({
         ...formData,
         services: {
@@ -76,7 +78,7 @@ const TaskPopup = (props) => {
           type: value,
         },
       });
-    } else if (name === 'personal_injuries') {
+    } else if (name === "personal_injuries") {
       setFormData({
         ...formData,
         services: {
@@ -84,7 +86,7 @@ const TaskPopup = (props) => {
           personal_injuries: parseInt(value),
         },
       });
-    } else if (name === 'art') {
+    } else if (name === "art") {
       setFormData({
         ...formData,
         services: {
@@ -92,7 +94,7 @@ const TaskPopup = (props) => {
           art: parseInt(value),
         },
       });
-    } else if (name === 'canalComunicacion') {
+    } else if (name === "canalComunicacion") {
       setFormData({
         ...formData,
         source_channel: value,
@@ -105,18 +107,17 @@ const TaskPopup = (props) => {
     }
 
     console.log(formData);
-
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://api.legalistas.com.ar/v1/settings');
-        const users = await fetch('https://api.legalistas.com.ar/v1/user');
-
+        const response = await fetch(
+          "https://api.legalistas.com.ar/v1/settings",
+        );
+        const users = await fetch("https://api.legalistas.com.ar/v1/user");
 
         if (response.ok && users.ok) {
-
           /// Response handler \\\
           const data = await response.json();
           setStates(data.states);
@@ -126,17 +127,17 @@ const TaskPopup = (props) => {
 
           /// Users handler \\\
           const userData = await users.json();
-          const formattedUsers = userData.map(user => ({
+          const formattedUsers = userData.map((user) => ({
             user_id: user.profile.user_id,
             firstname: user.profile.firstname,
-            lastname: user.profile.lastname
+            lastname: user.profile.lastname,
           }));
           setFormattedUsers(formattedUsers);
 
           // handle the data from the API response
           console.log(data, users);
         } else {
-          throw new Error('Failed to fetch data');
+          throw new Error("Failed to fetch data");
         }
       } catch (error) {
         console.error(error);
@@ -148,8 +149,9 @@ const TaskPopup = (props) => {
 
   return (
     <div
-      className={`fixed left-0 top-0 z-99999 flex h-screen w-full justify-center overflow-y-scroll bg-black/80 px-4 py-5 ${props.popupOpen === true ? "block" : "hidden"
-        }`}
+      className={`fixed left-0 top-0 z-99999 flex h-screen w-full justify-center overflow-y-scroll bg-black/80 px-4 py-5 ${
+        props.popupOpen === true ? "block" : "hidden"
+      }`}
     >
       <div className="relative m-auto w-full max-w-180 rounded-sm border border-stroke bg-gray p-4 shadow-default dark:border-strokedark dark:bg-meta-4 sm:p-8 xl:p-10">
         <button
@@ -174,12 +176,11 @@ const TaskPopup = (props) => {
         </button>
 
         <form action={() => create_opportunity(formData)}>
-
           {/* /////////////////////// INICIO FORMULARIO \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
 
           {/* /////////////////////// Cliente \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="client" className="mb-2.5 block font-medium text-black dark:text-white">
+            {/* <label htmlFor="client" className="mb-2.5 block font-medium text-black dark:text-white">
               Cliente
             </label>
             <select
@@ -188,18 +189,45 @@ const TaskPopup = (props) => {
               className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
               onChange={handleInputChange}
             >
-              {/* Options from formattedUsers */}
+              
               {formattedUsers.map(user => (
                 <option key={user.user_id} value={user.user_id}>
                   {`${user.firstname} ${user.lastname}`}
                 </option>
               ))}
+            </select> */}
+            <select
+              value=""
+              onChange=""
+              className="bg-gray-50 border-gray-300 text-gray-900 rounded-lg p-2 focus:border-blue-500 focus:ring-blue-500"
+            >
+              <option value="">Seleccione una opción</option>
+              <option value="option1">Opción 1</option>
+              <option value="option2">Opción 2</option>
+              <option value="option3">Opción 3</option>
             </select>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                openModal();
+              }}
+              className="rounded-lg bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              Confirmar
+            </button>
+
+            <Modal show={showModal} onClose={closeModal}>
+              <h2>Modal Content</h2>
+              <p>This is the content of the modal</p>
+            </Modal>
           </div>
 
           {/* /////////////////////// Provincia \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="states" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label
+              htmlFor="states"
+              className="mb-2.5 block font-medium text-black dark:text-white"
+            >
               Provincia
             </label>
             <select
@@ -210,14 +238,19 @@ const TaskPopup = (props) => {
             >
               {/* Options from api states constant */}
               {states.map((state) => (
-                <option key={state.id} value={state.id}>{state.name}</option>
+                <option key={state.id} value={state.id}>
+                  {state.name}
+                </option>
               ))}
             </select>
           </div>
 
           {/* /////////////////////// Ciudad \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="localities" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label
+              htmlFor="localities"
+              className="mb-2.5 block font-medium text-black dark:text-white"
+            >
               Ciudad
             </label>
             <select
@@ -228,14 +261,19 @@ const TaskPopup = (props) => {
             >
               {/* Options from localities.json */}
               {filterLocalities.map((locality) => (
-                <option key={locality.id} value={locality.name}>{locality.name}</option>
+                <option key={locality.id} value={locality.name}>
+                  {locality.name}
+                </option>
               ))}
             </select>
           </div>
 
           {/* /////////////////////// Correo Electronico \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="correoElectronico" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label
+              htmlFor="correoElectronico"
+              className="mb-2.5 block font-medium text-black dark:text-white"
+            >
               Correo Electrónico
             </label>
             <input
@@ -250,7 +288,10 @@ const TaskPopup = (props) => {
 
           {/* /////////////////////// Teléfono \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="caracteristicaTelefono" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label
+              htmlFor="caracteristicaTelefono"
+              className="mb-2.5 block font-medium text-black dark:text-white"
+            >
               Teléfono
             </label>
             <input
@@ -263,10 +304,12 @@ const TaskPopup = (props) => {
             />
           </div>
 
-
           {/* /////////////////////// Servicio \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="servicio" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label
+              htmlFor="servicio"
+              className="mb-2.5 block font-medium text-black dark:text-white"
+            >
               Servicío
             </label>
             <select
@@ -277,7 +320,9 @@ const TaskPopup = (props) => {
             >
               {/* Options from api services constant */}
               {services.map((service) => (
-                <option key={service.id} value={service.name}>{service.name}</option>
+                <option key={service.id} value={service.name}>
+                  {service.name}
+                </option>
               ))}
             </select>
           </div>
@@ -285,7 +330,10 @@ const TaskPopup = (props) => {
           <div className="flex w-full gap-3">
             {/* /////////////////////// Daños leves \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
             <div className="mb-5 w-1/2">
-              <label htmlFor="personal_injuries" className="mb-2.5 block font-medium text-black dark:text-white">
+              <label
+                htmlFor="personal_injuries"
+                className="mb-2.5 block font-medium text-black dark:text-white"
+              >
                 Daños leves
               </label>
               <select
@@ -301,7 +349,10 @@ const TaskPopup = (props) => {
 
             {/* /////////////////////// ART \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
             <div className="mb-5 w-1/2">
-              <label htmlFor="art" className="mb-2.5 block font-medium text-black dark:text-white">
+              <label
+                htmlFor="art"
+                className="mb-2.5 block font-medium text-black dark:text-white"
+              >
                 ART
               </label>
               <select
@@ -318,7 +369,10 @@ const TaskPopup = (props) => {
 
           {/* /////////////////////// Canal de Comunicación \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="canalComunicacion" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label
+              htmlFor="canalComunicacion"
+              className="mb-2.5 block font-medium text-black dark:text-white"
+            >
               Canal de Comunicación
             </label>
             <select
@@ -329,11 +383,12 @@ const TaskPopup = (props) => {
             >
               {/* Options from source_channels */}
               {source_channels.map((source_channels) => (
-                <option key={source_channels.id} value={source_channels.id}>{source_channels.name}</option>
+                <option key={source_channels.id} value={source_channels.id}>
+                  {source_channels.name}
+                </option>
               ))}
             </select>
           </div>
-
 
           {/* /////////////////////// Selector de columna por las dudas \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           {/* <div className="mb-5">
@@ -348,7 +403,6 @@ const TaskPopup = (props) => {
               ))}
             </select>
           </div> */}
-
 
           {/* Botón de envío */}
           <button className="flex w-full items-center justify-center gap-2 rounded bg-primary px-4.5 py-2.5 font-medium text-white hover:bg-opacity-90">
@@ -375,7 +429,6 @@ const TaskPopup = (props) => {
             Enviar
           </button>
         </form>
-
       </div>
     </div>
   );

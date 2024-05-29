@@ -1,10 +1,43 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import FormInput from "./Component/FormInput";
 import FormSelect from "./Component/FormSelect";
 import { FaEnvelope, FaLock, FaUser } from "react-icons/fa";
 
 const UserMake = () => {
+  const [teams, setTeams] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState("");
+  const [roles, setRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState("");
+
+  useEffect(() => {
+    // Fetch the teams data from the API
+    fetch("https://api.legalistas.com.ar/v1/api/teams")
+      .then((response) => response.json())
+      .then((data) => {
+        // Filter out the "Clientes" team
+        const filteredTeams = data.filter((team) => team.name !== "Clientes");
+        setTeams(filteredTeams);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
+  const handleTeamChange = (event) => {
+    const teamId = event.target.value;
+    setSelectedTeam(teamId);
+
+    // Find the selected team
+    const team = teams.find((t) => t.id === parseInt(teamId));
+
+    // Set the roles for the selected team
+    setRoles(team ? team.Roles : []);
+    setSelectedRole(""); // Reset the selected role when the team changes
+  };
+
+  const handleRoleChange = (event) => {
+    setSelectedRole(event.target.value);
+  };
+
   return (
     <div className="rounded-lg border border-stroke bg-white pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark xl:pb-1">
       <div className="flex items-center justify-between rounded p-4">
@@ -56,7 +89,7 @@ const UserMake = () => {
               name="email"
             />
           </div>
-          <div class="group relative z-0 mb-5 w-full">
+          <div className="group relative z-0 mb-5 w-full">
             <FormInput
               title="Contraseña"
               type="password"
@@ -79,18 +112,25 @@ const UserMake = () => {
           <div className="grid md:grid-cols-2 md:gap-6">
             <div className="group relative z-0 mb-5 w-full">
               <FormSelect
-                title="Area"
-                uid="teams"
-                placeholder="Area"
+                title="Selecciona un área"
+                uid="team-select"
                 name="team"
+                placeholder="--Seleccione un área--"
+                value={selectedTeam}
+                onChange={handleTeamChange}
+                data={teams}
               />
             </div>
             <div className="group relative z-0 mb-5 w-full">
               <FormSelect
-                title="Rol"
-                uid="role"
-                placeholder="Rol"
+                title="Selecciona un rol"
+                uid="role-select"
                 name="role"
+                placeholder="--Seleccione un rol--"
+                value={selectedRole}
+                onChange={handleRoleChange}
+                data={roles}
+                disabled={!selectedTeam}
               />
             </div>
           </div>

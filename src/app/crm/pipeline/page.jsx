@@ -1,12 +1,13 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
+import Kanban from "@/components/Crm/Kanban";
+import { DragDropContext } from "@hello-pangea/dnd";
 
 const CrmPipeline = () => {
   return (
     <>
       <DefaultLayout>
-        <Breadcrumb pageName="CRM - Embudo" />
-        <div className="flex flex-col gap-10"></div>
+        <Kanban />
       </DefaultLayout>
     </>
   );

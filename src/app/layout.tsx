@@ -10,6 +10,7 @@ import "@/css/simple-datatables.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
 import { Providers } from "./providers";
+import { DragDropContext } from "@hello-pangea/dnd";
 
 export default function RootLayout({
   children,
