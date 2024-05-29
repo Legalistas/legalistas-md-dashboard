@@ -4,7 +4,13 @@ import KanbanCard from "@/components/Crm/KanbanCard";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const KanbanColumn = ({ column }) => {
-  const onDragEnd = (result) => {};
+  const handleOndragEnd = (result) => {
+    // Avoiding the error when moving the items out of their droppable area.
+    if (!result.destination) {
+      return;
+    }
+  };
+
   return (
     <div key={column.id}>
       <div className="mx-auto flex w-[272px] flex-col rounded-lg border border-stroke bg-white p-4 pb-2.5 shadow-card dark:border-strokedark dark:bg-boxdark">
@@ -14,8 +20,8 @@ const KanbanColumn = ({ column }) => {
             <FaEllipsisVertical />
           </button>
         </div>
-        <div className="overflow-x-auto">
-          
+        <div className="flex h-[100%] flex-col space-y-4">
+          <DragDropContext onDragEnd={handleOndragEnd}>
             <Droppable
               droppableId="droppable"
               type="default"
@@ -48,7 +54,7 @@ const KanbanColumn = ({ column }) => {
                 </div>
               )}
             </Droppable>
-         
+          </DragDropContext>
         </div>
         <button className="text-gray-400 hover:text-gray-600 mt-4 flex w-full items-center justify-center">
           <FaPlus />

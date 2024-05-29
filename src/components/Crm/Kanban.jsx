@@ -26,14 +26,12 @@ const Kanban = () => {
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
 
-  const onDragEnd = (result) => {};
-
   return (
     <>
       <div className="mx-auto ">
         <Breadcrumb pageName="CRM - EMBUDO" />
 
-        <div className="flex gap-4 overflow-x-auto whitespace-nowrap">
+        <div className="flex gap-4 whitespace-nowrap">
           {category.map((column, index) => (
             <KanbanColumn key={index} column={column} />
           ))}
