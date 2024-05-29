@@ -1,11 +1,12 @@
 "use client";
 
-import { useAuth } from '../contexts/AuthContext';
-import { AuthProvider } from '../contexts/AuthContext';
+import { useAuth } from "../contexts/AuthContext";
+import { AuthProvider } from "../contexts/AuthContext";
 import "jsvectormap/dist/css/jsvectormap.css";
 import "flatpickr/dist/flatpickr.min.css";
 import "@/css/satoshi.css";
 import "@/css/style.css";
+import "@/css/simple-datatables.css";
 import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
 import { Providers } from "./providers";
@@ -23,7 +24,6 @@ export default function RootLayout({
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
   }, []);
-
 
   return (
     <html lang="en">

@@ -2,31 +2,35 @@
 
 import React, { ReactNode, useEffect, useState } from "react";
 import { PlusIcon } from "../Icons/PlusIcon";
-import { VerticalDotsIcon } from "../Icons/VerticalDotsIcon";
+import { EyeIcon } from "../Icons/EyeIcon";
+import { EditIcon } from "../Icons/EditIcon";
+import { DeleteIcon } from "../Icons/DeleteIcon";
 import { ChevronDownIcon } from "../Icons/ChevronDownIcon";
 import { SearchIcon } from "../Icons/SearchIcon";
 import {
-  Button,
-  ChipProps,
-  Input,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownTrigger,
-  Pagination,
-  Selection,
-  SortDescriptor,
   Table,
-  TableBody,
-  TableCell,
-  TableColumn,
   TableHeader,
+  TableColumn,
+  TableBody,
   TableRow,
+  TableCell,
+  Input,
+  Button,
+  DropdownTrigger,
+  Dropdown,
+  DropdownMenu,
+  DropdownItem,
   Chip,
   User,
+  Pagination,
+  Selection,
+  ChipProps,
+  SortDescriptor,
+  Tooltip,
 } from "@nextui-org/react";
 import { capitalize, md5 } from "@/types/utils";
 import { CiGrid42 } from "react-icons/ci";
+import Link from "next/link";
 
 type User = {
   id: string;
@@ -94,12 +98,12 @@ const UserTable: React.FC = () => {
           id: user.id,
           lastnameFirstname: `${user.profile.lastname} ${user.profile.firstname}`,
           email: user.email,
-          role: user.teamRole.role.name,
-          team: user.teamRole.team.name,
+          role: user?.teamRole?.role?.name  || 'Sin Equipo y Rol',
+          team: user?.teamRole?.team?.name  || 'Sin Equipo y Rol',
           status: user.status ? "active" : "paused",
           avatar: `https://secure.gravatar.com/avatar/${md5(user.email)}?size=150px`,
         }));
-
+        console.log(transformedData)
         setData(transformedData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -199,19 +203,22 @@ const UserTable: React.FC = () => {
         );
       case "actions":
         return (
-          <div className="relative flex items-center justify-end gap-2">
-            <Dropdown>
-              <DropdownTrigger>
-                <Button isIconOnly size="sm" variant="light">
-                  <VerticalDotsIcon className="text-default-300" />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem>View</DropdownItem>
-                <DropdownItem>Edit</DropdownItem>
-                <DropdownItem>Delete</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+          <div className="relative flex items-center gap-2">
+            <Tooltip content="Details">
+              <span className="cursor-pointer text-lg text-default-400 active:opacity-50">
+                <EyeIcon />
+              </span>
+            </Tooltip>
+            <Tooltip content="Edit user">
+              <span className="cursor-pointer text-lg text-default-400 active:opacity-50">
+                <EditIcon />
+              </span>
+            </Tooltip>
+            <Tooltip color="danger" content="Delete user">
+              <span className="cursor-pointer text-lg text-danger active:opacity-50">
+                <DeleteIcon />
+              </span>
+            </Tooltip>
           </div>
         );
       default:
@@ -315,9 +322,11 @@ const UserTable: React.FC = () => {
                 ))}
               </DropdownMenu>
             </Dropdown>
-            <Button color="primary" endContent={<PlusIcon />}>
-              Nuevo miembro
-            </Button>
+            <Link href="/users/create" passHref>
+              <Button color="primary" endContent={<PlusIcon />}>
+                Nuevo miembro
+              </Button>
+            </Link>
           </div>
         </div>
         <div className="flex items-center justify-between">
@@ -386,7 +395,10 @@ const UserTable: React.FC = () => {
       bottomContent={bottomContent}
       bottomContentPlacement="outside"
       classNames={{
-        wrapper: "max-h-[382px]",
+        wrapper: "max-h-[382px] rounded-none p-0 ",
+
+        th: ["text-default-500 border-b border-divider rounded-none bg-white font-2xl"],
+        td: ["text-default-500 border-b border-divider rounded-none bg-white font-2xl"],
       }}
       selectedKeys={selectedKeys}
       selectionMode="multiple"
@@ -400,7 +412,7 @@ const UserTable: React.FC = () => {
         {(column) => (
           <TableColumn
             key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
+            align={column.uid === "actions" ? "center" : "center"}
             allowsSorting={column.sortable}
           >
             {column.name}
@@ -411,7 +423,7 @@ const UserTable: React.FC = () => {
         {(item) => (
           <TableRow key={item.id}>
             {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
+              <TableCell className="text-2xl">{renderCell(item, columnKey)}</TableCell>
             )}
           </TableRow>
         )}

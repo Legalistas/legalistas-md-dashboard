@@ -14,6 +14,7 @@ const TaskPopup = (props) => {
   const [filterLocalities, setFilterLocalities] = useState([]);
   const [services, setServices] = useState([]);
   const [source_channels, setSource_channels] = useState([]);
+  const [formattedUsers, setFormattedUsers] = useState([]);
 
 
   // Estado para manejar los datos del formulario
@@ -22,16 +23,16 @@ const TaskPopup = (props) => {
     status: "open",
     state: "pending",
     category_id: 1,
-    customer_id: 2,
-    seller_id: user.user.id,
+    customer_id: 0,
+    seller_id: user?.user?.id,
     internal_lawyer_id: 1,
     external_lawyer_id: 2,
     services: {
-      type: "",
+      type: "Accidente de transito",
       personal_injuries: 0,
       art: 0
     },
-    source_channel: "Publicidad",
+    source_channel: 0,
   });
 
 
@@ -62,6 +63,11 @@ const TaskPopup = (props) => {
       // Filter localities based on the selected state
       const filteredLocalities = localities.filter(locality => locality.state_id === parseInt(value));
       setFilterLocalities(filteredLocalities);
+    } else if (name === 'client') {
+      setFormData({
+        ...formData,
+        customer_id: value,
+      });
     } else if (name === 'servicio') {
       setFormData({
         ...formData,
@@ -86,26 +92,49 @@ const TaskPopup = (props) => {
           art: parseInt(value),
         },
       });
+    } else if (name === 'canalComunicacion') {
+      setFormData({
+        ...formData,
+        source_channel: value,
+      });
     } else {
       setFormData({
         ...formData,
         [name]: value,
       });
     }
+
+    console.log(formData);
+
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch('https://api.legalistas.com.ar/v1/settings');
-        if (response.ok) {
+        const users = await fetch('https://api.legalistas.com.ar/v1/user');
+
+
+        if (response.ok && users.ok) {
+
+          /// Response handler \\\
           const data = await response.json();
           setStates(data.states);
           setLocalities(data.localities);
           setServices(data.services);
           setSource_channels(data.source_channels);
+
+          /// Users handler \\\
+          const userData = await users.json();
+          const formattedUsers = userData.map(user => ({
+            user_id: user.profile.user_id,
+            firstname: user.profile.firstname,
+            lastname: user.profile.lastname
+          }));
+          setFormattedUsers(formattedUsers);
+
           // handle the data from the API response
-          console.log(data);
+          console.log(data, users);
         } else {
           throw new Error('Failed to fetch data');
         }
@@ -159,9 +188,11 @@ const TaskPopup = (props) => {
               className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
               onChange={handleInputChange}
             >
-              {/* Options from states.json */}
-              {statesData.map((state) => (
-                <option key={state.id} value={state.name}>{state.name}</option>
+              {/* Options from formattedUsers */}
+              {formattedUsers.map(user => (
+                <option key={user.user_id} value={user.user_id}>
+                  {`${user.firstname} ${user.lastname}`}
+                </option>
               ))}
             </select>
           </div>
@@ -298,7 +329,7 @@ const TaskPopup = (props) => {
             >
               {/* Options from source_channels */}
               {source_channels.map((source_channels) => (
-                <option key={source_channels.id} value={source_channels.name}>{source_channels.name}</option>
+                <option key={source_channels.id} value={source_channels.id}>{source_channels.name}</option>
               ))}
             </select>
           </div>

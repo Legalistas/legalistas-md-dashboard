@@ -1,5 +1,5 @@
 export const login = async (email, password) => {
-    const response = await fetch('https://api.legalistas.com.ar/api/v1/login', {
+    const response = await fetch('https://api.legalistas.com.ar/v1/auth/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

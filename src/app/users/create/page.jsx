@@ -1,16 +1,16 @@
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import UserTable from "@/components/Users/UserTable";
+import UserMake from "@/components/Users/UserMake";
 
-const Users = () => {
+const UsersCreate = () => {
   return (
     <DefaultLayout>
-      <Breadcrumb pageName="Miembros" />
+      <Breadcrumb pageName="Miembros / Crear" />
       <div className="flex flex-col gap-10">
-        <UserTable />
+        <UserMake />
       </div>
     </DefaultLayout>
   );
 };
 
-export default Users;
+export default UsersCreate;
