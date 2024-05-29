@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import KanbanColumn from "@/components/Crm/KanbanColumn";
 import { useAuth } from "@/contexts/AuthContext";
-import { DragDropContext } from "@hello-pangea/dnd";
+
 
 const Kanban = () => {
   const { user } = useAuth();
