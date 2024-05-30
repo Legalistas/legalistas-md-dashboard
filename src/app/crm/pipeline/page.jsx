@@ -109,7 +109,7 @@ const KanbanPipelinePage = () => {
         <div className="mx-auto">
           <Breadcrumb pageName="Kanban Pipeline" />
           <KanbanHeader />
-          <div className="whitespace-nowraps flex gap-4">
+          <div className="whitespace-nowraps overflow-x-auto flex gap-4">
             {categories.map((column) => (
               <Droppable key={column.id} droppableId={column.id.toString()}>
                 {(provided) => (
