@@ -1,0 +1,33 @@
+[
+{"type":"header","version":"5.2.1","comment":"Export to JSON plugin for PHPMyAdmin"},
+{"type":"database","name":"lega6829_desarrollo"},
+{"type":"table","name":"states","database":"lega6829_desarrollo","data":
+[
+{"id":"1","country_id":"11","name":"Buenos Aires"},
+{"id":"2","country_id":"11","name":"Buenos Aires-GBA"},
+{"id":"3","country_id":"11","name":"Capital Federal"},
+{"id":"4","country_id":"11","name":"Catamarca"},
+{"id":"5","country_id":"11","name":"Chaco"},
+{"id":"6","country_id":"11","name":"Chubut"},
+{"id":"7","country_id":"11","name":"Córdoba"},
+{"id":"8","country_id":"11","name":"Corrientes"},
+{"id":"9","country_id":"11","name":"Entre Ríos"},
+{"id":"10","country_id":"11","name":"Formosa"},
+{"id":"11","country_id":"11","name":"Jujuy"},
+{"id":"12","country_id":"11","name":"La Pampa"},
+{"id":"13","country_id":"11","name":"La Rioja"},
+{"id":"14","country_id":"11","name":"Mendoza"},
+{"id":"15","country_id":"11","name":"Misiones"},
+{"id":"16","country_id":"11","name":"Neuquén"},
+{"id":"17","country_id":"11","name":"Río Negro"},
+{"id":"18","country_id":"11","name":"Salta"},
+{"id":"19","country_id":"11","name":"San Juan"},
+{"id":"20","country_id":"11","name":"San Luis"},
+{"id":"21","country_id":"11","name":"Santa Cruz"},
+{"id":"22","country_id":"11","name":"Santa Fe"},
+{"id":"23","country_id":"11","name":"Santiago del Estero"},
+{"id":"24","country_id":"11","name":"Tierra del Fuego"},
+{"id":"25","country_id":"11","name":"Tucumán"}
+]
+}
+]
