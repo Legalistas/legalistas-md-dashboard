@@ -28,6 +28,7 @@
   }
 }
 
+
 @layer components {
 }
 
@@ -50,6 +51,8 @@
     @apply h-[calc(100vh_-_8.125rem)] lg:h-[calc(100vh_-_5.625rem)];
   }
 }
+
+
 
 /* third-party libraries CSS */
 

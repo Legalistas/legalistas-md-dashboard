@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import statesData from "./mockData/states.json"; // Importar datos de states.json
 import { create_opportunity } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
-import Modal from "./Crm/Components/Modal/Modal";
+
 
 const TaskPopup = (props) => {
   const [files, setFiles] = useState(null);
@@ -216,10 +216,6 @@ const TaskPopup = (props) => {
               Confirmar
             </button>
 
-            <Modal show={showModal} onClose={closeModal}>
-              <h2>Modal Content</h2>
-              <p>This is the content of the modal</p>
-            </Modal>
           </div>
 
           {/* /////////////////////// Provincia \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
