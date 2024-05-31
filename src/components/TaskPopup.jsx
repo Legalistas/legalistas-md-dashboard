@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
-import statesData from "./mockData/states.json"; // Importar datos de states.json
+import statesData from './mockData/states.json'; // Importar datos de states.json
 import { create_opportunity } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
+import { FaUserPlus } from "react-icons/fa";
+import Modal from "./modal/Modal"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+
+
 
 const TaskPopup = (props) => {
   const [files, setFiles] = useState(null);
@@ -13,27 +20,50 @@ const TaskPopup = (props) => {
   const [services, setServices] = useState([]);
   const [source_channels, setSource_channels] = useState([]);
   const [formattedUsers, setFormattedUsers] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [role, setRole] = useState([]);
+  const [lawyersInt, setlawyersInt] = useState([]);
+  const [lawyersExt, setLawyersExt] = useState([]);
+  const [customers, setCustomers] = useState([]);
+
+  // Modal crear usuario
   const [showModal, setShowModal] = useState(false);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
+
 
   // Estado para manejar los datos del formulario
   const [formData, setFormData] = useState({
     status: "open",
     state: "pending",
     category_id: 1,
-    customer_id: 0,
     seller_id: user?.user?.id,
     internal_lawyer_id: 1,
     external_lawyer_id: 2,
     services: {
-      type: "Accidente de transito",
-      personal_injuries: 0,
-      art: 0,
+      type: 0,
+      personal_injuries: 1,
+      art: 1
     },
+    email: "",
+    phone: "",
+    state_id: 0,
+    locality_id: 0,
     source_channel: 0,
+    customer_id: 0,
   });
+
+  // Creacion de usuario
+  const [createUser, setCreateUser] = useState({
+    email: "",
+    password: "",
+    role: 8,
+    team: 33,
+    firstname: "",
+    lastname: "",
+  })
+
 
   // Lista de columnas para el kanban
   const columns = [
@@ -46,38 +76,61 @@ const TaskPopup = (props) => {
     "7-REUNIÓN DE PODER",
     "8-PENDIENTE PODER",
     "9-GANADO - TRAJO PODER",
-    "10-PERDIDA",
+    "10-PERDIDA"
   ];
 
   // Función para manejar el cambio en los inputs del formulario
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "states") {
+    if (name === 'states') {
       setFormData({
         ...formData,
-        [name]: value,
+        state_id: parseInt(value),
       });
 
       // Filter localities based on the selected state
-      const filteredLocalities = localities.filter(
-        (locality) => locality.state_id === parseInt(value),
-      );
+      const filteredLocalities = localities.filter(locality => locality.state_id === parseInt(value));
       setFilterLocalities(filteredLocalities);
-    } else if (name === "client") {
+    } else if (name === 'client') {
       setFormData({
         ...formData,
-        customer_id: value,
+        customer_id: parseInt(value),
       });
-    } else if (name === "servicio") {
+    } else if (name === 'email') {
+      setFormData({
+        ...formData,
+        email: value,
+      });
+    } else if (name === 'localities') {
+      setFormData({
+        ...formData,
+        locality_id: parseInt(value),
+      });
+    } else if (name === 'lw_in') {
+      setFormData({
+        ...formData,
+        internal_lawyer_id: parseInt(value),
+      });
+    } else if (name === 'lw_ex') {
+      setFormData({
+        ...formData,
+        external_lawyer_id: parseInt(value),
+      });
+    } else if (name === 'phone') {
+      setFormData({
+        ...formData,
+        phone: value,
+      });
+    } else if (name === 'service') {
       setFormData({
         ...formData,
         services: {
           ...formData.services,
-          type: value,
+          type: parseInt(value),
         },
       });
-    } else if (name === "personal_injuries") {
+    } else if (name === 'personal_injuries') {
       setFormData({
         ...formData,
         services: {
@@ -85,7 +138,7 @@ const TaskPopup = (props) => {
           personal_injuries: parseInt(value),
         },
       });
-    } else if (name === "art") {
+    } else if (name === 'art') {
       setFormData({
         ...formData,
         services: {
@@ -93,10 +146,42 @@ const TaskPopup = (props) => {
           art: parseInt(value),
         },
       });
-    } else if (name === "canalComunicacion") {
+    } else if (name === 'canalComunicacion') {
       setFormData({
         ...formData,
-        source_channel: value,
+        source_channel: parseInt(value),
+      });
+    } else if (name === 'fname') {
+      setCreateUser({
+        ...createUser,
+        firstname: value,
+      });
+    } else if (name === 'lname') {
+      setCreateUser({
+        ...createUser,
+        lastname: value,
+      });
+    } else if (name === 'create_email') {
+      setCreateUser({
+        ...createUser,
+        email: value,
+      });
+    } else if (name === 'pass') {
+      setCreateUser({
+        ...createUser,
+        password: value,
+      });
+    } else if (name === 'area') {
+      const selectedTeam = teams.find(team => team.id === parseInt(value));
+      setCreateUser({
+        ...createUser,
+        team: selectedTeam.id,
+      });
+      setRole(selectedTeam.Roles.map(role => ({ id: role.id, name: role.name })));
+    } else if (name === 'role') {
+      setCreateUser({
+        ...createUser,
+        role: value,
       });
     } else {
       setFormData({
@@ -106,17 +191,40 @@ const TaskPopup = (props) => {
     }
 
     console.log(formData);
+
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "https://api.legalistas.com.ar/v1/settings",
-        );
-        const users = await fetch("https://api.legalistas.com.ar/v1/user");
+        const response = await fetch('https://api.legalistas.com.ar/v1/settings');
+        const users = await fetch('https://api.legalistas.com.ar/v1/user');
+        const area_rol = await fetch('https://api.legalistas.com.ar/v1/api/teams');
+        const abogados_otros = await fetch('https://api.legalistas.com.ar/v1/user');
+        const customers = await fetch('https://api.legalistas.com.ar/v1/customer')
+
+        if (abogados_otros.ok && customers.ok) {
+          const abogados = await abogados_otros.json();
+          const customerss = await customers.json();
+
+          const abogadosInternos = abogados.filter(abogado => abogado.teamRole.role_id >= 6 && abogado.teamRole.role_id <= 7);
+          const abogadosExternos = abogados.filter(abogado => abogado.teamRole.role_id >= 1 && abogado.teamRole.role_id <= 5);
+
+          setlawyersInt(abogadosInternos);
+          setLawyersExt(abogadosExternos);
+          setCustomers(customerss)
+          
+        }
+
+        if (area_rol.ok) {
+          const area = await area_rol.json();
+          const filteredTeams = area.filter((team) => team.name !== "Clientes");
+          setTeams(filteredTeams);
+        }
+
 
         if (response.ok && users.ok) {
+
           /// Response handler \\\
           const data = await response.json();
           setStates(data.states);
@@ -126,17 +234,14 @@ const TaskPopup = (props) => {
 
           /// Users handler \\\
           const userData = await users.json();
-          const formattedUsers = userData.map((user) => ({
+          const formattedUsers = userData.map(user => ({
             user_id: user.profile.user_id,
             firstname: user.profile.firstname,
-            lastname: user.profile.lastname,
+            lastname: user.profile.lastname
           }));
           setFormattedUsers(formattedUsers);
-
-          // handle the data from the API response
-          console.log(data, users);
         } else {
-          throw new Error("Failed to fetch data");
+          throw new Error('Failed to fetch data');
         }
       } catch (error) {
         console.error(error);
@@ -146,13 +251,31 @@ const TaskPopup = (props) => {
     fetchData();
   }, []); // empty dependency array to run only once on component mount
 
+
+  /// Crear user funtion \\\
+  const handleCreateUser = async (data) => {
+    try {
+      console.log('Sending POST request with data:', data);
+      const response = await axios.post('https://api.legalistas.com.ar/v1/customer/create', data, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      console.log('Response:', response.data);
+      toast("¡Usuario creado exitosamente!");
+      closeModal()
+    } catch (error) {
+      console.error('Error:', error);
+      toast("Error occurred", error.message);
+    }
+  };
+
   return (
     <div
-      className={`fixed left-0 top-0 z-99999 flex h-screen w-full justify-center overflow-y-scroll bg-black/80 px-4 py-5 ${
-        props.popupOpen === true ? "block" : "hidden"
-      }`}
+      className={`fixed left-0 top-0 z-9999 flex h-screen w-full justify-center overflow-y-scroll bg-black/80 px-4 py-5 ${props.popupOpen === true ? "block" : "hidden"
+        }`}
     >
-      <div className="relative m-auto w-full max-w-180 rounded-sm border border-stroke bg-gray p-4 shadow-default dark:border-strokedark dark:bg-meta-4 sm:p-8 xl:p-10">
+      <div className="relative m-auto w-full max-w-180 rounded-xl border border-stroke bg-gray p-4 shadow-default dark:border-strokedark dark:bg-meta-4 sm:p-8 xl:p-10">
         <button
           onClick={() => props.setPopupOpen(false)}
           className="absolute right-1 top-1 sm:right-5 sm:top-5"
@@ -175,105 +298,198 @@ const TaskPopup = (props) => {
         </button>
 
         <form action={() => create_opportunity(formData)}>
+
           {/* /////////////////////// INICIO FORMULARIO \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
 
           {/* /////////////////////// Cliente \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            {/* <label htmlFor="client" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label htmlFor="client" className="mb-2.5 block font-medium text-black dark:text-white">
               Cliente
             </label>
-            <select
-              name="client"
-              id="client"
-              className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
-              onChange={handleInputChange}
-            >
-              
-              {formattedUsers.map(user => (
-                <option key={user.user_id} value={user.user_id}>
-                  {`${user.firstname} ${user.lastname}`}
-                </option>
-              ))}
-            </select> */}
-            <select
-              value=""
-              onChange=""
-              className="bg-gray-50 border-gray-300 text-gray-900 rounded-lg p-2 focus:border-blue-500 focus:ring-blue-500"
-            >
-              <option value="">Seleccione una opción</option>
-              <option value="option1">Opción 1</option>
-              <option value="option2">Opción 2</option>
-              <option value="option3">Opción 3</option>
-            </select>
-            <button
-              onClick={(e) => {
+            <div className="flex w-full">
+              <select
+                name="client"
+                id="client"
+                onChange={handleInputChange}
+                className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                defaultValue=""
+              >
+                <option value="" disabled>Seleccione un usuario</option>
+                {customers.map((cus) => (
+                  <option key={cus.id} value={cus.id}>{cus.profile.lastname}, {cus.profile.firstname}</option>
+                ))}
+              </select>
+
+              <button onClick={(e) => {
                 e.preventDefault();
                 openModal();
               }}
-              className="rounded-lg bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              Confirmar
-            </button>
+                className="w-[10%] flex justify-center items-center rounded-e-xl p-1 bg-[#4d60e3]">
+                <FaUserPlus className="text-[25px] w-full  text-white " />
+              </button>
+
+              {/* /// Modal popup a mostrar \\\ */}
+              <Modal show={showModal} onClose={closeModal}>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  handleCreateUser(createUser);
+                }}>
+                  <h2>Crear cliente</h2>
+
+                  <div className="flex w-full gap-3">
+
+                    <div className="mb-5 w-1/2">
+                      <label htmlFor="fname" className="mb-2.5 block font-medium text-black dark:text-white">
+                        Nombre
+                      </label>
+                      <input
+                        type="text"
+                        name="fname"
+                        id="fname"
+                        placeholder="Ingrese su Nombre"
+                        className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                        onChange={handleInputChange}
+                      />
+                    </div>
+
+                    <div className="mb-5 w-1/2">
+                      <label htmlFor="lname" className="mb-2.5 block font-medium text-black dark:text-white">
+                        Apellido
+                      </label>
+                      <input
+                        type="text"
+                        name="lname"
+                        id="lname"
+                        placeholder="Ingrese su Apellido"
+                        className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                        onChange={handleInputChange}
+                      />
+                    </div>
+
+                  </div>
+
+                  <div className="mb-5">
+                    <label htmlFor="create_email" className="mb-2.5 block font-medium text-black dark:text-white">
+                      Correo Electrónico
+                    </label>
+                    <input
+                      type="text"
+                      name="create_email"
+                      id="create_email"
+                      placeholder="Ingrese su correo electrónico"
+                      className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                      onChange={handleInputChange}
+                    />
+                  </div>
+
+                  <div className="mb-5">
+                    <label htmlFor="pass" className="mb-2.5 block font-medium text-black dark:text-white">
+                      Contraseña
+                    </label>
+                    <input
+                      type="password"
+                      name="pass"
+                      id="pass"
+                      placeholder="Ingrese su contraseña"
+                      className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                      onChange={handleInputChange}
+                    />
+                  </div>
+
+                  <div className="mb-5">
+                    <label htmlFor="repass" className="mb-2.5 block font-medium text-black dark:text-white">
+                      Repetir contraseña
+                    </label>
+                    <input
+                      type="password"
+                      name="repass"
+                      id="repass"
+                      placeholder="Ingrese nuevamente su contraseña"
+                      className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                      onChange={handleInputChange}
+                    />
+                  </div>
+
+                  <button type="button" onClick={() => handleCreateUser(createUser)} className="flex w-full items-center justify-center gap-2 rounded bg-primary px-4.5 py-2.5 font-medium text-white hover:bg-opacity-90">
+                    <svg
+                      className="fill-current"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g clip-path="url(#clip0_60_9740)">
+                        <path
+                          d="M18.75 9.3125H10.7187V1.25C10.7187 0.875 10.4062 0.53125 10 0.53125C9.625 0.53125 9.28125 0.84375 9.28125 1.25V9.3125H1.25C0.875 9.3125 0.53125 9.625 0.53125 10.0312C0.53125 10.4062 0.84375 10.75 1.25 10.75H9.3125V18.75C9.3125 19.125 9.625 19.4687 10.0312 19.4687C10.4062 19.4687 10.75 19.1562 10.75 18.75V10.7187H18.75C19.125 10.7187 19.4687 10.4062 19.4687 10C19.4687 9.625 19.125 9.3125 18.75 9.3125Z"
+                          fill=""
+                        />
+                      </g>
+                      <defs>
+                        <clipPath id="clip0_60_9740">
+                          <rect width="20" height="20" fill="white" />
+                        </clipPath>
+                      </defs>
+                    </svg>
+                    Enviar
+                  </button>
+                </form>
+              </Modal>
+
+            </div>
           </div>
 
-          {/* /////////////////////// Provincia \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
-          <div className="mb-5">
-            <label
-              htmlFor="states"
-              className="mb-2.5 block font-medium text-black dark:text-white"
-            >
-              Provincia
-            </label>
-            <select
-              name="states"
-              id="states"
-              className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
-              onChange={handleInputChange}
-            >
-              {/* Options from api states constant */}
-              {states.map((state) => (
-                <option key={state.id} value={state.id}>
-                  {state.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <div className="flex w-full gap-3">
+            {/* /////////////////////// Provincia \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
+            <div className="mb-5 w-1/2">
+              <label htmlFor="states" className="mb-2.5 block font-medium text-black dark:text-white">
+                Provincia
+              </label>
+              <select
+                name="states"
+                id="states"
+                className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                onChange={handleInputChange}
+                defaultValue=""
+              >
+                <option value="" disabled>Seleccione una provincia</option>
+                {/* Options from api states constant */}
+                {states.map((state) => (
+                  <option key={state.id} value={state.id}>{state.name}</option>
+                ))}
+              </select>
+            </div>
 
-          {/* /////////////////////// Ciudad \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
-          <div className="mb-5">
-            <label
-              htmlFor="localities"
-              className="mb-2.5 block font-medium text-black dark:text-white"
-            >
-              Ciudad
-            </label>
-            <select
-              name="localities"
-              id="localities"
-              className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
-              onChange={handleInputChange}
-            >
-              {/* Options from localities.json */}
-              {filterLocalities.map((locality) => (
-                <option key={locality.id} value={locality.name}>
-                  {locality.name}
-                </option>
-              ))}
-            </select>
+            {/* /////////////////////// Ciudad \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
+            <div className="mb-5 w-1/2">
+              <label htmlFor="localities" className="mb-2.5 block font-medium text-black dark:text-white">
+                Ciudad
+              </label>
+              <select
+                name="localities"
+                id="localities"
+                className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                onChange={handleInputChange}
+                defaultValue=""
+              >
+                <option value="" disabled>Seleccione un cuidad</option>
+                {/* Options from localities.json */}
+                {filterLocalities.map((locality) => (
+                  <option key={locality.id} value={locality.id}>{locality.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* /////////////////////// Correo Electronico \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label
-              htmlFor="correoElectronico"
-              className="mb-2.5 block font-medium text-black dark:text-white"
-            >
+            <label htmlFor="email" className="mb-2.5 block font-medium text-black dark:text-white">
               Correo Electrónico
             </label>
             <input
               type="email"
-              name="correoElectronico"
-              id="correoElectronico"
+              name="email"
+              id="email"
               placeholder="Ingrese su correo electrónico"
               className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
               onChange={handleInputChange}
@@ -282,41 +498,36 @@ const TaskPopup = (props) => {
 
           {/* /////////////////////// Teléfono \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label
-              htmlFor="caracteristicaTelefono"
-              className="mb-2.5 block font-medium text-black dark:text-white"
-            >
+            <label htmlFor="phone" className="mb-2.5 block font-medium text-black dark:text-white">
               Teléfono
             </label>
             <input
-              type="tel"
-              name="caracteristicaTelefono"
-              id="caracteristicaTelefono"
+              type="number"
+              name="phone"
+              id="phone"
               placeholder="Ingrese su teléfono"
               className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
               onChange={handleInputChange}
             />
           </div>
 
+
           {/* /////////////////////// Servicio \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label
-              htmlFor="servicio"
-              className="mb-2.5 block font-medium text-black dark:text-white"
-            >
+            <label htmlFor="service" className="mb-2.5 block font-medium text-black dark:text-white">
               Servicío
             </label>
             <select
-              name="servicio"
-              id="servicio"
+              name="service"
+              id="service"
               className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
               onChange={handleInputChange}
+              defaultValue=""
             >
+              <option value="" disabled>Seleccione un servicio</option>
               {/* Options from api services constant */}
               {services.map((service) => (
-                <option key={service.id} value={service.name}>
-                  {service.name}
-                </option>
+                <option key={service.id} value={service.id}>{service.name}</option>
               ))}
             </select>
           </div>
@@ -324,10 +535,7 @@ const TaskPopup = (props) => {
           <div className="flex w-full gap-3">
             {/* /////////////////////// Daños leves \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
             <div className="mb-5 w-1/2">
-              <label
-                htmlFor="personal_injuries"
-                className="mb-2.5 block font-medium text-black dark:text-white"
-              >
+              <label htmlFor="personal_injuries" className="mb-2.5 block font-medium text-black dark:text-white">
                 Daños leves
               </label>
               <select
@@ -335,7 +543,9 @@ const TaskPopup = (props) => {
                 id="personal_injuries"
                 className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
                 onChange={handleInputChange}
+                defaultValue=""
               >
+                <option value="" disabled>Seleccione una opción</option>
                 <option value={1}>Si</option>
                 <option value={0}>No</option>
               </select>
@@ -343,10 +553,7 @@ const TaskPopup = (props) => {
 
             {/* /////////////////////// ART \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
             <div className="mb-5 w-1/2">
-              <label
-                htmlFor="art"
-                className="mb-2.5 block font-medium text-black dark:text-white"
-              >
+              <label htmlFor="art" className="mb-2.5 block font-medium text-black dark:text-white">
                 ART
               </label>
               <select
@@ -354,7 +561,9 @@ const TaskPopup = (props) => {
                 id="art"
                 className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
                 onChange={handleInputChange}
+                defaultValue=""
               >
+                <option value="" disabled>Seleccione una opción</option>
                 <option value={1}>Si</option>
                 <option value={0}>No</option>
               </select>
@@ -363,10 +572,7 @@ const TaskPopup = (props) => {
 
           {/* /////////////////////// Canal de Comunicación \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label
-              htmlFor="canalComunicacion"
-              className="mb-2.5 block font-medium text-black dark:text-white"
-            >
+            <label htmlFor="canalComunicacion" className="mb-2.5 block font-medium text-black dark:text-white">
               Canal de Comunicación
             </label>
             <select
@@ -374,15 +580,59 @@ const TaskPopup = (props) => {
               id="canalComunicacion"
               className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
               onChange={handleInputChange}
+              defaultValue=""
             >
+              <option value="" disabled>Seleccione una opción</option>
               {/* Options from source_channels */}
               {source_channels.map((source_channels) => (
-                <option key={source_channels.id} value={source_channels.id}>
-                  {source_channels.name}
-                </option>
+                <option key={source_channels.id} value={source_channels.id}>{source_channels.name}</option>
               ))}
             </select>
           </div>
+
+
+          {/* /////////////////////// Abogados \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
+          <div className="flex w-full gap-3">
+
+            <div className="mb-5 w-1/2">
+              <label htmlFor="lw_in" className="mb-2.5 block font-medium text-black dark:text-white">
+                Seleccione un abogado representante
+              </label>
+              <select
+                name="lw_in"
+                id="lw_in"
+                className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                onChange={handleInputChange}
+                defaultValue=""
+              >
+                {/* Options from api teams constant */}
+                <option value="" disabled>Seleccione un abogado</option>
+                {lawyersInt.map(abogado => (
+                  <option key={abogado.id} value={abogado.id}>{abogado.profile.lastname}, {abogado.profile.firstname}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mb-5 w-1/2">
+              <label htmlFor="lw_ex" className="mb-2.5 block font-medium text-black dark:text-white">
+                Seleccione un abogado interno
+              </label>
+              <select
+                name="lw_ex"
+                id="lw_ex"
+                className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
+                onChange={handleInputChange}
+                defaultValue=""
+              >
+                {/* Options from api teams constant */}
+                <option value="" disabled>Seleccione un abogado</option>
+                {lawyersExt.map(abogado => (
+                  <option key={abogado.id} value={abogado.id}>{abogado.profile.lastname}, {abogado.profile.firstname}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
 
           {/* /////////////////////// Selector de columna por las dudas \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           {/* <div className="mb-5">
@@ -398,8 +648,19 @@ const TaskPopup = (props) => {
             </select>
           </div> */}
 
+
           {/* Botón de envío */}
-          <button className="flex w-full items-center justify-center gap-2 rounded bg-primary px-4.5 py-2.5 font-medium text-white hover:bg-opacity-90">
+          <button type="button" onClick={
+            () => {
+              create_opportunity(formData)
+                .then(() => {
+                  toast("¡Oportunidad creada exitosamente!");
+                })
+                .catch((error) => {
+                  toast.error("Error al crear usuario: " + error.message);
+                });
+            }
+          } className="flex w-full items-center justify-center gap-2 rounded bg-primary px-4.5 py-2.5 font-medium text-white hover:bg-opacity-90">
             <svg
               className="fill-current"
               width="20"
@@ -423,6 +684,7 @@ const TaskPopup = (props) => {
             Enviar
           </button>
         </form>
+
       </div>
     </div>
   );

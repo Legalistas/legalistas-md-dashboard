@@ -8,6 +8,7 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import KanbanHeader from "@/components/Crm/KanbanHeader";
 import { FaClipboardUser, FaEllipsisVertical } from "react-icons/fa6";
 import { FaCommentDots } from "react-icons/fa";
+import Link from 'next/link';
 
 const KanbanPipelinePage = () => {
   const { user } = useAuth();
@@ -127,12 +128,13 @@ const KanbanPipelinePage = () => {
                     <ul>
                       {column.leads.map((lead, leadIndex) => (
                         <Draggable
-                          key={lead.id}
-                          draggableId={lead.id.toString()}
+                          key={lead.leadId}
+                          draggableId={lead.leadId.toString()}
                           index={leadIndex}
                         >
                           {(provided) => (
-                            <div
+                            <Link //aca
+                              href={`/crm/pipeline/${lead.leadId}`}
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
@@ -168,7 +170,7 @@ const KanbanPipelinePage = () => {
                                   />
                                 </div>
                               </div>
-                            </div>
+                            </Link>
                           )}
                         </Draggable>
                       ))}

@@ -70,7 +70,7 @@ const DropdownUser = () => {
           ) : (
             // Renderizar el avatar "Junior" si el usuario no tiene avatar definido
             <Avatar
-              name={`${user.user.profile.firstname} ${user.user.profile.lastname}`}
+              name={`${user?.user?.profile?.firstname} ${user?.user?.profile?.lastname}`}
             />
           )}
         </span>

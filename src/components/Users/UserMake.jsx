@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import FormInput from "./Component/FormInput";
 import FormSelect from "./Component/FormSelect";
 import { FaEnvelope, FaLock, FaUser } from "react-icons/fa";
-// import { ToastContainer, toast } from 'react-toastify';
-// import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import axios from 'axios';
 
 const UserMake = () => {
@@ -96,10 +96,10 @@ const UserMake = () => {
         }
       });
       console.log('Response:', response.data);
-      // toast("Success");
+      toast("¡Usuario creado exitosamente!");
     } catch (error) {
       console.error('Error:', error);
-      // toast("Error occurred", error.message);
+      toast("Error occurred", error.message);
     }
   };
 

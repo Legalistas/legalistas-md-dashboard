@@ -1,7 +1,39 @@
 import { FaSquarePlus } from "react-icons/fa6";
 import { PlusIcon } from "../Icons/PlusIcon";
+import { useEffect, useRef, useState } from "react";
+import TaskPopup from "../TaskPopup";
 
 const KanbanHeader = () => {
+  const [popupOpen, setPopupOpen] = useState(false);
+
+  const trigger = useRef(null);
+  const popup = useRef(null);
+
+  // close on click outside
+  useEffect(() => {
+    const clickHandler = ({ target }) => {
+      if (!popup.current) return;
+      if (
+        !popupOpen ||
+        popup.current.contains(target) ||
+        trigger.current.contains(target)
+      )
+        return;
+      setPopupOpen(false);
+    };
+    document.addEventListener("click", clickHandler);
+    return () => document.removeEventListener("click", clickHandler);
+  });
+
+  // close if the esc key is pressed
+  useEffect(() => {
+    const keyHandler = ({ keyCode }) => {
+      if (!popupOpen || keyCode !== 27) return;
+      setPopupOpen(false);
+    };
+    document.addEventListener("keydown", keyHandler);
+    return () => document.removeEventListener("keydown", keyHandler);
+  });
   return (
     <>
       <div className="mx-auto mb-4 w-full">
@@ -40,11 +72,30 @@ const KanbanHeader = () => {
             </div>
             <div className="flex w-full flex-shrink-0 flex-col items-stretch justify-end space-y-2 md:w-auto md:flex-row md:items-center md:space-x-3 md:space-y-0">
               <button
-                type="button"
-                className="flex items-center justify-center rounded-lg bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+                ref={trigger}
+                onClick={() => setPopupOpen(!popupOpen)}
+                className="flex items-center gap-2 justify-center rounded-lg bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
-                PlusIcon Add product
+                <svg
+                  className="fill-current"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M15 7H9V1C9 0.4 8.6 0 8 0C7.4 0 7 0.4 7 1V7H1C0.4 7 0 7.4 0 8C0 8.6 0.4 9 1 9H7V15C7 15.6 7.4 16 8 16C8.6 16 9 15.6 9 15V9H15C15.6 9 16 8.6 16 8C16 7.4 15.6 7 15 7Z"
+                    fill=""
+                  />
+                </svg>
+                Add task
               </button>
+
+              {/* <!-- ===== Task Popup Start ===== --> */}
+              <TaskPopup popupOpen={popupOpen} setPopupOpen={setPopupOpen} />
+              {/* <!-- ===== Task Popup End ===== --> */}
+
               <div className="flex w-full items-center space-x-3 md:w-auto">
                 <button
                   id="actionsDropdownButton"
