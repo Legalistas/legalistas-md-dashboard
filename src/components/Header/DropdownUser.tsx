@@ -53,12 +53,12 @@ const DropdownUser = () => {
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
             {user?.user?.profile?.firstname && user?.user?.profile?.lastname
-              ? `${user.user.profile.firstname} ${user.user.profile.lastname}`
+              ? `${user?.user?.profile.firstname} ${user?.user?.profile.lastname}`
               : `No has iniciado sesión`}
           </span>
           <span className="block text-xs">
             {user?.user?.teamRole.role.name
-              ? user.user.teamRole.role.name
+              ? user?.user?.teamRole.role.name
               : "Sin rol"}
           </span>
         </span>
@@ -66,11 +66,11 @@ const DropdownUser = () => {
         <span className="h-12 w-12 rounded-full">
           {user?.user?.profile?.avatar ? (
             // Renderizar el avatar del usuario si está definido
-            <Avatar src={user.user.profile.avatar} />
+            <Avatar src={user?.user?.profile?.avatar} />
           ) : (
             // Renderizar el avatar "Junior" si el usuario no tiene avatar definido
             <Avatar
-              name={`${user.user.profile.firstname} ${user.user.profile.lastname}`}
+              name={`${user?.user?.profile.firstname} ${user?.user?.profile?.lastname}`}
             />
           )}
         </span>

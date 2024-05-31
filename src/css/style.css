@@ -261,3 +261,20 @@ input[type="search"]::-webkit-search-cancel-button {
 [x-cloak] {
   display: none !important;
 }
+
+.placeholder-dragging {
+  border: 1px dashed #b7bec7;
+  background: repeating-linear-gradient(
+    45deg,
+    white,
+    white 5px,
+    #eef2f9 5px,
+    #eef2f9 10px
+  );
+  height: 120px; /* Ajusta según el tamaño de la tarjeta */
+  width: 100%;
+  /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);*/
+  border-radius: 0.5rem;
+
+}
+

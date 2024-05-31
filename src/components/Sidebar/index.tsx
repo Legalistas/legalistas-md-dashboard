@@ -74,7 +74,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           <img
             width={180}
             height={32}
-            src={"/images/logo/logo.svg"}
+            src={"/images/logo/logo-dark.svg"}
             alt="Logo"
             className="lg:text-center"
           />
@@ -123,7 +123,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                   href="#"
                                   className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 text-sm font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
                                     (pathname === link.key ||
-                                      pathname.includes(link.key)) &&
+                                      (pathname.startsWith(link.key + "/") &&
+                                        pathname !== link.key + "/")) &&
                                     "bg-graydark dark:bg-meta-4"
                                   }`}
                                   onClick={(e) => {
@@ -141,6 +142,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                     }`}
                                   />
                                 </Link>
+
                                 {/* <!-- Dropdown Menu Start --> */}
                                 <div
                                   className={`translate transform overflow-hidden ${
@@ -172,7 +174,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     <Link
                       href={link.href}
                       className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 text-sm font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                        (pathname === link.key || pathname.includes(link.key)) &&
+                        (pathname === link.key ||
+                          (pathname.startsWith(link.key + "/") &&
+                            pathname !== link.key + "/")) &&
                         "bg-graydark dark:bg-meta-4"
                       }`}
                     >
