@@ -1,9 +1,42 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaFilter } from "react-icons/fa";
 import { FaChevronDown, FaMagnifyingGlass, FaPlus } from "react-icons/fa6";
+import TaskPopup from "../TaskPopup";
+import { useDisclosure } from "@nextui-org/react";
 
 const KanbanHeader = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [popupOpen, setPopupOpen] = useState(false);
+
+  const trigger = useRef(null);
+  const popup = useRef(null);
+
+  // close on click outside
+  useEffect(() => {
+    const clickHandler = ({ target }) => {
+      if (!popup.current) return;
+      if (
+        !popupOpen ||
+        popup.current.contains(target) ||
+        trigger.current.contains(target)
+      )
+        return;
+      setPopupOpen(false);
+    };
+    document.addEventListener("click", clickHandler);
+    return () => document.removeEventListener("click", clickHandler);
+  });
+
+  // close if the esc key is pressed
+  useEffect(() => {
+    const keyHandler = ({ keyCode }) => {
+      if (!popupOpen || keyCode !== 27) return;
+      setPopupOpen(false);
+    };
+    document.addEventListener("keydown", keyHandler);
+    return () => document.removeEventListener("keydown", keyHandler);
+  });
+
 
   return (
     <>
@@ -31,11 +64,14 @@ const KanbanHeader = () => {
             </div>
             <div className="flex w-full flex-shrink-0 flex-col items-stretch justify-end space-y-2 md:w-auto md:flex-row md:items-center md:space-x-3 md:space-y-0">
               <button
+               ref={trigger}
+               onClick={() => setPopupOpen(!popupOpen)}
                 type="button"
                 className="flex items-center justify-center rounded-lg bg-primary-700 px-4 py-2 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
               >
-                <FaPlus className="mr-2"/> Nueva oportunidad
+                <FaPlus className="mr-2" /> Nueva oportunidad
               </button>
+              <TaskPopup popupOpen={popupOpen} setPopupOpen={setPopupOpen} />
               <div className="flex w-full items-center space-x-3 md:w-auto">
                 <button
                   id="actionsDropdownButton"
