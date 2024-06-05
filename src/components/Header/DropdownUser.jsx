@@ -8,17 +8,24 @@ import {
   FaChevronDown,
   FaChevronUp,
 } from "react-icons/fa";
+import { SlSocialGoogle } from "react-icons/sl";
+import { signIn, getSession, useSession } from 'next-auth/react';
+import { change_to_google } from "@/services/api";
+
+
+
 
 const DropdownUser = () => {
+  const { data: session, status } = useSession();
   const { user, signOut } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const trigger = useRef<any>(null);
-  const dropdown = useRef<any>(null);
+  const trigger = useRef(null);
+  const dropdown = useRef(null);
 
   // close on click outside
   useEffect(() => {
-    const clickHandler = ({ target }: MouseEvent) => {
+    const clickHandler = ({ target }) => {
       if (!dropdown.current) return;
       if (
         !dropdownOpen ||
@@ -34,13 +41,36 @@ const DropdownUser = () => {
 
   // close if the esc key is pressed
   useEffect(() => {
-    const keyHandler = ({ keyCode }: KeyboardEvent) => {
+    const keyHandler = ({ keyCode }) => {
       if (!dropdownOpen || keyCode !== 27) return;
       setDropdownOpen(false);
     };
     document.addEventListener("keydown", keyHandler);
     return () => document.removeEventListener("keydown", keyHandler);
   });
+
+  const handleGoogleSignIn = async () => {
+    signIn("google");
+  };
+
+  // Ejecuta el código cuando la sesión cambia
+  useEffect(() => {
+    if (session) {
+      console.log("Session:", session);
+      if (session.user && session.user.email) {
+        const token = session.accessToken;
+        console.log("Token:", token);
+        if (token) {
+          console.log(user.user.id, session.user.email, session.user.id)
+          change_to_google(user.user.id, session.user.email, session.user.id)
+        } else {
+          console.error("Token is undefined");
+        }
+      }
+    }
+  }, [session]);
+
+
 
   return (
     <div className="relative">
@@ -87,9 +117,8 @@ const DropdownUser = () => {
         ref={dropdown}
         onFocus={() => setDropdownOpen(true)}
         onBlur={() => setDropdownOpen(false)}
-        className={`absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ${
-          dropdownOpen === true ? "block" : "hidden"
-        }`}
+        className={`absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ${dropdownOpen === true ? "block" : "hidden"
+          }`}
       >
         <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
           <li>
@@ -163,10 +192,18 @@ const DropdownUser = () => {
               Account Settings
             </Link>
           </li>
+          <li>
+            <button onClick={handleGoogleSignIn} className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+              <SlSocialGoogle className="text-xl" />
+              Vincular con Google
+            </button>
+          </li>
         </ul>
         <button
           className="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
-          onClick={signOut}
+          onClick={() =>
+            signOut()
+          }
         >
           <svg
             className="fill-current"

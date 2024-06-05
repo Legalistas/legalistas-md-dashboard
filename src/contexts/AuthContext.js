@@ -2,8 +2,13 @@
 import React, { createContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { login } from '../services/api';
+import { signOut } from 'next-auth/react';
 
 const AuthContext = createContext();
+
+const logout = () => {
+    signOut();
+};
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -19,8 +24,8 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
-    const signIn = async (email, password) => {
-        const response = await login(email, password);
+    const signIn = async (email, password, token) => {
+        const response = await login(email, password, token);
         if (response && response.token) {
             setUser(response);
             localStorage.setItem('user', JSON.stringify(response));
@@ -28,10 +33,11 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const signOut = () => {
+    const signOut = async () => {
+        router.push('/auth/signin');
+        logout();
         setUser(null);
         localStorage.removeItem('user');
-        router.push('/auth/signin');
     };
 
     return (

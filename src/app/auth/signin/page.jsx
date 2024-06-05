@@ -5,6 +5,7 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 // import { Metadata } from "next";
 import GuestLayout from "@/layouts/GuestLayout";
 import LoginForm from "@/components/FormElements/Login";
+import { useSession } from 'next-auth/react';
 
 // export const metadata: Metadata = {
 //   title: "Next.js SignIn Page | TailAdmin - Next.js Dashboard Template",
@@ -12,6 +13,8 @@ import LoginForm from "@/components/FormElements/Login";
 // };
 
 const SignIn = () => {
+  const { data: session, data } = useSession()
+
   return (
     <GuestLayout>
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
@@ -173,6 +176,7 @@ const SignIn = () => {
               </h2>
 
               <LoginForm />
+              
             </div>
           </div>
         </div>
