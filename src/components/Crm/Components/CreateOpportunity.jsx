@@ -25,6 +25,14 @@ const CreateOpportunity = () => {
   const [hasART, setHasART] = useState(null);
   const [customers, setCustomers] = useState([]);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [customerDetails, setCustomerDetails] = useState(null);
+
+  // Nuevos estados locales para los valores de los inputs
+  const [email, setEmail] = useState("");
+  const [characteristic, setCharacteristic] = useState("");
+  const [phone, setPhone] = useState("");
+  const [stateId, setStateId] = useState("");
+  const [localityId, setLocalityId] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,6 +86,37 @@ const CreateOpportunity = () => {
 
     fetchData();
   }, [selectedState]);
+
+  // Nueva función para obtener los detalles del cliente seleccionado
+  useEffect(() => {
+    const fetchCustomerDetails = async () => {
+      try {
+        if (selectedCustomer) {
+          const response = await axios.get(
+            `https://api.legalistas.com.ar/v1/user/${selectedCustomer}`,
+          );
+          const customerData = response.data;
+          setCustomerDetails(customerData);
+          // Actualiza los estados locales con los datos del cliente
+          setEmail(customerData.email || "");
+          setCharacteristic(customerData.profile.characteristic || "");
+          setPhone(customerData.profile.phone || "");
+          setStateId(customerData.profile.state_id || "");
+          setLocalityId(customerData.profile.locality_id || "");
+          console.log("Customer details: ", customerData);
+        }
+      } catch (error) {
+        console.error("Error fetching customer details:", error);
+      }
+    };
+
+    fetchCustomerDetails();
+  }, [selectedCustomer]);
+
+  const handleCustomerSelect = (customerId) => {
+    console.log("Customer selected: ", customerId);
+    setSelectedCustomer(customerId);
+  };
 
   const handleServiceChange = (event) => {
     const value = event.target.value;
@@ -144,7 +183,7 @@ const CreateOpportunity = () => {
                       required={true}
                       id="cliente"
                       suggestions={customers}
-                      onSelect={setSelectedCustomer}
+                      onSelect={handleCustomerSelect}
                     />
                   </div>
                   <button
@@ -181,12 +220,14 @@ const CreateOpportunity = () => {
             <div className="mb-2 flex w-full justify-between gap-4">
               <div className="w-full">
                 <InputElement
-                  label="Correo electronico"
-                  required={false}
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="Ingresa tu correo electronico"
+                   label="Correo electronico"
+                   required={false}
+                   id="email"
+                   name="email"
+                   type="email"
+                   placeholder="Ingresa tu correo electronico"
+                   value={email}
+                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
             </div>
@@ -200,6 +241,8 @@ const CreateOpportunity = () => {
                   name="characteristic"
                   type="text"
                   placeholder="Ingresa una característica"
+                  value={characteristic}
+                  onChange={(e) => setCharacteristic(e.target.value)}
                 />
               </div>
               <div className="w-3/4">
@@ -210,6 +253,8 @@ const CreateOpportunity = () => {
                   name="phone"
                   type="text"
                   placeholder="Ingresa el número de teléfonos"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                 />
               </div>
             </div>
@@ -223,16 +268,18 @@ const CreateOpportunity = () => {
                   id={"provincia"}
                   name="province"
                   required={true}
+                  value={stateId}
                 />
               </div>
               <div className="w-1/2">
                 <SelectElement
-                  label="Ciudad"
-                  disabled={!selectedState}
-                  options={filteredLocalities}
-                  id={"ciudad"}
-                  name="city"
-                  required={true}
+                 label="Ciudad"
+                 disabled={!selectedState}
+                 options={filteredLocalities}
+                 id={"ciudad"}
+                 name="city"
+                 required={true}
+                 value={localityId}
                 />
               </div>
             </div>
