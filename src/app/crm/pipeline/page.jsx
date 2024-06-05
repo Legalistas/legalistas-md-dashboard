@@ -5,6 +5,7 @@ import { DragDropContext } from "@hello-pangea/dnd";
 import { useAuth } from "@/contexts/AuthContext";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
 import KanbanBoard from "@/components/Crm/KanbanBoard";
+import Loader from "@/components/common/Loader";
 
 const KanbanPipelinePage = () => {
   const { user } = useAuth();
@@ -21,16 +22,13 @@ const KanbanPipelinePage = () => {
         );
 
         setCategories(response.data);
-        console.log(user.user.id);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
-    if (user?.user?.id) {
-      fetchData();
-    }
-  }, [user]);
+    fetchData();
+  }, []);
 
   const handleDragEnd = async (result) => {
     if (!result.destination) return;

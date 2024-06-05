@@ -278,3 +278,25 @@ input[type="search"]::-webkit-search-cancel-button {
 
 }
 
+
+.custom-select {
+  border: 2px solid #0070f3;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.custom-select__dropdown {
+  background-color: #f0f0f0;
+  border: 1px solid #0070f3;
+}
+
+.custom-select__option {
+  padding: 8px;
+  font-size: 16px;
+}
+
+.custom-select__option--selected {
+  background-color: #0070f3;
+  color: #fff;
+}

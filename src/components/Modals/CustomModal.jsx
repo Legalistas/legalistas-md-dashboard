@@ -58,7 +58,6 @@ const CustomModal = ({
                 <h3 className="text-[1.3rem] font-bold"> {title}</h3>
               </ModalHeader>
               <ModalBody>{children}</ModalBody>
-              <ModalFooter className="flex flex-col gap-1 border-t-[0px]"></ModalFooter>
             </>
           )}
         </ModalContent>

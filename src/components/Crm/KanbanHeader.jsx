@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import { useDisclosure } from "@nextui-org/react";
-
+import { Button, useDisclosure } from "@nextui-org/react";
 import KanbanSearch from "@/components/Crm/Components/KanbanSearch";
 import BtnNewOpportunity from "@/components/Crm/Components/BtnNewOpportunity";
 import BtnActions from "@/components/Crm/Components/BtnActions";
 import CustomModal from "@/components/Modals/CustomModal";
 import CreateOpportunity from "@/components/Crm/Components/CreateOpportunity";
+import ToggleViewAll from "@/components/Crm/Components/BtnToggleView";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
 
-const KanbanHeader = () => {
+const KanbanHeader = ({ toggleView, toggle, viewAll }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -20,8 +20,6 @@ const KanbanHeader = () => {
             </div>
             <div className="flex w-full flex-shrink-0 flex-col items-stretch justify-end space-y-2 md:w-auto md:flex-row md:items-center md:space-x-3 md:space-y-0">
               <BtnNewOpportunity open={onOpen} />
-
-              <BtnActions />
             </div>
           </div>
         </div>

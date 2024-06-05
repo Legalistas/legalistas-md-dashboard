@@ -1,7 +1,7 @@
 import { Avatar, AvatarGroup, Tooltip } from "@nextui-org/react";
 const KanbanCardAvatar = ({ lead }) => {
   return (
-    <AvatarGroup isBordered className="cursor-pointer">
+    <AvatarGroup isBordered className="cursor-pointer z-0">
       <Tooltip content={lead.sellerName}>
         {lead.sellerAvatar === null ? (
           <Avatar size="sm" name={lead.sellerName} src={lead.sellerAvatar} />

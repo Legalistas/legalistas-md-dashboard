@@ -25,7 +25,7 @@ const KanbanCard = ({ lead, index }) => {
               transition: "transform 0.2s ease-out",
               transform:
                 snapshot.isDragging && provided.draggableProps.style.transform
-                  ? `translate(${provided.draggableProps.style.transform.split("translate(")[1].split(")")[0]}) rotate(-3deg)`
+                  ? `translate(${provided.draggableProps.style.transform.split("translate(")[1].split(")")[0]}) rotate(3deg)`
                   : provided.draggableProps.style.transform,
             }}
           >
