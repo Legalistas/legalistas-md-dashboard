@@ -47,11 +47,13 @@ const CreateOpportunity = () => {
         setLocalities(setting.localities);
         setServices(setting.services);
 
-        if (selectedState) {
-          const localitiesForState = setting.localities.filter(
-            (locality) => locality.state_id === selectedState,
+        if (stateId) {
+          const localitiesForState = localities.filter(
+            (locality) => locality.state_id === stateId,
           );
           setFilteredLocalities(localitiesForState);
+        } else {
+          setFilteredLocalities([]);
         }
 
         const responseLawyers = await fetch(
@@ -140,7 +142,7 @@ const CreateOpportunity = () => {
   };
 
   const handleCreateCustomer = (newCustomer) => {
-    const customer = newCustomer
+    const customer = newCustomer;
     console.log("New customer created:", customer);
     console.log("New customer created:", customer.user.id);
     setCustomers((prevCustomers) => {
@@ -148,7 +150,7 @@ const CreateOpportunity = () => {
       return updatedCustomers;
     });
     setSelectedCustomer(customer.user.id);
-    console.log(selectedCustomer)
+    console.log(selectedCustomer);
     onClose();
   };
 
@@ -271,20 +273,19 @@ const CreateOpportunity = () => {
                   id={"provincia"}
                   name="province"
                   required={true}
-                  value={stateId}
-                  defaultValue={stateId}
+                  value={stateId} // Ensure the selected value is properly set
                 />
               </div>
               <div className="w-1/2">
                 <SelectElement
                   label="Ciudad"
-                  disabled={!selectedState}
+                  // Disable if no state is selected
                   options={filteredLocalities}
                   id={"ciudad"}
                   name="city"
                   required={true}
                   value={localityId}
-                  // defaultValue={stateId}
+                  disabled={!stateId}
                 />
               </div>
             </div>
