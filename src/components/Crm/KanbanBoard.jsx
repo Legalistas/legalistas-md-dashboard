@@ -5,15 +5,26 @@ import KanbanColumn from "@/components/Crm/KanbanColumn";
 import KanbanList from "@/components/Crm/KanbanList";
 
 const KanbanBoard = ({ categories }) => {
+  const [showGrid, setShowGrid] = useState(true);
+
+  const toggleGrid = () => {
+    setShowGrid(!showGrid);
+  };
+
   return (
     <div className="mx-auto">
       <Breadcrumb pageName="Kanban Pipeline" />
-      <KanbanHeader />
-      <div className="whitespace-nowraps flex gap-4 overflow-x-auto">
-        {categories.map((column) => (
-          <KanbanColumn key={column.id} column={column} />
-        ))}
-      </div>
+      <KanbanHeader showGrid={showGrid} toggleGrid={toggleGrid} />
+      
+      {showGrid ? (
+        <div className="whitespace-nowraps flex gap-4 overflow-x-auto">
+          {categories.map((column) => (
+            <KanbanColumn key={column.id} column={column} />
+          ))}
+        </div>
+      ) : (
+        <KanbanList />
+      )}
     </div>
   );
 };

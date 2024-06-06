@@ -46,7 +46,7 @@ const DataStatsThree: React.FC = () => {
           <div className="flex items-end justify-between">
             <div>
               <h3 className="mb-4 text-title-lg font-bold text-black dark:text-white">
-                197
+                100
               </h3>
               <p className="font-medium">Clients Added</p>
               <span className="mt-2 flex items-center gap-2">
@@ -63,7 +63,7 @@ const DataStatsThree: React.FC = () => {
                       fill="white"
                     />
                   </svg>
-                  <span>+2.5%</span>
+                  <span>+45.5%</span>
                 </span>
 
                 <span className="text-sm font-medium">Since last week</span>

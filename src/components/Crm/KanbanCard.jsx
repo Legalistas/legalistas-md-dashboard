@@ -33,7 +33,7 @@ const KanbanCard = ({ lead, index }) => {
             <Link href={`/crm/pipeline/${lead.leadId}`}>
               <div className="rounded-lg border border-stroke bg-white p-4 pb-2.5 shadow-card dark:border-strokedark dark:bg-boxdark">
                 <div className="flex items-center justify-between">
-                  <span className="rounded bg-[#374151] px-2.5 py-0.5 text-xs font-medium text-gray dark:bg-[#374151] dark:text-gray">
+                  <span className="rounded bg-[#EFF4FB] px-2.5 py-0.5 text-xs font-medium text-black dark:bg-[#374151] dark:text-gray">
                     {lead.customerStateName && lead.customerLocalityName
                       ? `${lead.customerStateName.name} - ${lead.customerLocalityName.name}`
                       : ""}

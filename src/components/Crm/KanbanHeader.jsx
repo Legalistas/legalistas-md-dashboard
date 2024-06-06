@@ -1,13 +1,12 @@
-import { Button, useDisclosure } from "@nextui-org/react";
+import { useDisclosure } from "@nextui-org/react";
 import KanbanSearch from "@/components/Crm/Components/KanbanSearch";
 import BtnNewOpportunity from "@/components/Crm/Components/BtnNewOpportunity";
-import BtnActions from "@/components/Crm/Components/BtnActions";
 import CustomModal from "@/components/Modals/CustomModal";
 import CreateOpportunity from "@/components/Crm/Components/CreateOpportunity";
-import ToggleViewAll from "@/components/Crm/Components/BtnToggleView";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa6";
+import { BsKanban, BsTable } from "react-icons/bs";
 
-const KanbanHeader = ({ toggleView, toggle, viewAll }) => {
+const KanbanHeader = ({ toggleGrid, showGrid }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -20,6 +19,13 @@ const KanbanHeader = ({ toggleView, toggle, viewAll }) => {
             </div>
             <div className="flex w-full flex-shrink-0 flex-col items-stretch justify-end space-y-2 md:w-auto md:flex-row md:items-center md:space-x-3 md:space-y-0">
               <BtnNewOpportunity open={onOpen} />
+              <button
+                onClick={toggleGrid}
+                type="button"
+                className="flex items-center gap-2 rounded-lg bg-primary px-4.5 py-2 font-medium text-white hover:bg-opacity-80"
+              >
+                {showGrid ? <BsTable className="text-title-sm2" /> : <BsKanban className="text-title-sm2"/>}
+              </button>
             </div>
           </div>
         </div>
