@@ -1,4 +1,5 @@
 import React from "react";
+import CiclePercentSvg from "../Charts/CiclePercentSvg";
 
 const DataStatsThree: React.FC = () => {
   return (
@@ -185,30 +186,7 @@ const DataStatsThree: React.FC = () => {
             </div>
 
             <div>
-              <svg className="h-17.5 w-17.5 -rotate-90 transform">
-                <circle
-                  className="text-stroke dark:text-strokedark"
-                  strokeWidth="10"
-                  stroke="currentColor"
-                  fill="transparent"
-                  r="30"
-                  cx="35"
-                  cy="35"
-                />
-                <circle
-                  className="text-primary"
-                  strokeWidth="10"
-                  strokeDasharray={30 * 2 * Math.PI}
-                  strokeDashoffset={
-                    30 * 2 * Math.PI - (70 / 100) * 30 * 2 * Math.PI
-                  }
-                  stroke="currentColor"
-                  fill="transparent"
-                  r="30"
-                  cx="35"
-                  cy="35"
-                />
-              </svg>
+              <CiclePercentSvg percentage={30}/>
             </div>
           </div>
         </div>
