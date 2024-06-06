@@ -27,7 +27,6 @@ const AutoCompleteElement = ({
           const fullName = `${customerData.profile.firstname} ${customerData.profile.lastname}`;
           setSearchValue(fullName);
         }
-        console.log("Selected user in autocomplete: " + selectedCustomer, customerData)
       }
     }
     fetchData()
