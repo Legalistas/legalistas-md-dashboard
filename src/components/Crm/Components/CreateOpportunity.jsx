@@ -140,13 +140,15 @@ const CreateOpportunity = () => {
   };
 
   const handleCreateCustomer = (newCustomer) => {
-    console.log("New customer created:", newCustomer);
+    const customer = newCustomer
+    console.log("New customer created:", customer);
+    console.log("New customer created:", customer.user.id);
     setCustomers((prevCustomers) => {
       const updatedCustomers = [...prevCustomers, newCustomer];
-      console.log("Updated customers:", updatedCustomers);
       return updatedCustomers;
     });
-    setSelectedCustomer(newCustomer.user.id);
+    setSelectedCustomer(customer.user.id);
+    console.log(selectedCustomer)
     onClose();
   };
 
@@ -184,6 +186,7 @@ const CreateOpportunity = () => {
                       id="cliente"
                       suggestions={customers}
                       onSelect={handleCustomerSelect}
+                      selectedCustomer={selectedCustomer}
                     />
                   </div>
                   <button
@@ -220,14 +223,14 @@ const CreateOpportunity = () => {
             <div className="mb-2 flex w-full justify-between gap-4">
               <div className="w-full">
                 <InputElement
-                   label="Correo electronico"
-                   required={false}
-                   id="email"
-                   name="email"
-                   type="email"
-                   placeholder="Ingresa tu correo electronico"
-                   value={email}
-                   onChange={(e) => setEmail(e.target.value)}
+                  label="Correo electronico"
+                  required={false}
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="Ingresa tu correo electronico"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
             </div>
@@ -269,17 +272,19 @@ const CreateOpportunity = () => {
                   name="province"
                   required={true}
                   value={stateId}
+                  defaultValue={stateId}
                 />
               </div>
               <div className="w-1/2">
                 <SelectElement
-                 label="Ciudad"
-                 disabled={!selectedState}
-                 options={filteredLocalities}
-                 id={"ciudad"}
-                 name="city"
-                 required={true}
-                 value={localityId}
+                  label="Ciudad"
+                  disabled={!selectedState}
+                  options={filteredLocalities}
+                  id={"ciudad"}
+                  name="city"
+                  required={true}
+                  value={localityId}
+                  // defaultValue={stateId}
                 />
               </div>
             </div>

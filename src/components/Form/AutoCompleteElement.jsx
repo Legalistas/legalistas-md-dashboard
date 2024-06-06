@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaUsers } from "react-icons/fa6";
+import axios from "axios";
 
 const AutoCompleteElement = ({
   required,
@@ -15,13 +16,21 @@ const AutoCompleteElement = ({
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
-    if (selectedCustomer) {
-      const customer = suggestions.find((c) => c.user.id === selectedCustomer);
-      if (customer) {
-        const fullName = `${customer.profile.firstname} ${customer.profile.lastname}`;
-        setSearchValue(fullName);
+    const fetchData = async () => {
+      if (selectedCustomer) {
+        const response = await axios.get(
+          `https://api.legalistas.com.ar/v1/user/${selectedCustomer}`,
+        );
+        const customerData = response.data;
+
+        if (customerData) {
+          const fullName = `${customerData.profile.firstname} ${customerData.profile.lastname}`;
+          setSearchValue(fullName);
+        }
+        console.log("Selected user in autocomplete: " + selectedCustomer, customerData)
       }
     }
+    fetchData()
   }, [selectedCustomer, suggestions]);
 
   useEffect(() => {
