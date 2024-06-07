@@ -2,7 +2,7 @@
 import Breadcrumb from "../Breadcrumbs/Breadcrumb";
 import ChartFour from "@/components/Charts/ChartFour";
 import ChartSeven from "@/components/Charts/ChartSeven";
-import ChartEight from "@/components/Charts/ChartEight";
+import ChartSourceChannel from "@/components/Charts/ChartSourceChannel";
 import ChartSix from "@/components/Charts/ChartSix";
 import ChartNine from "@/components/Charts/ChartNine";
 import ChartTwelve from "@/components/Charts/ChartTwelve";
@@ -21,7 +21,7 @@ const AdvancedChart: React.FC = () => {
           <ChartSeven />
         </div>
         <div className="col-span-12 xl:col-span-5">
-          <ChartEight />
+          <ChartSourceChannel />
         </div>
         <div className="col-span-12 xl:col-span-7">
           <ChartSix />
