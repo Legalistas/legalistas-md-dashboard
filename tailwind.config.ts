@@ -32,7 +32,7 @@ const config = {
         bodydark: "#AEB7C0",
         bodydark1: "#DEE4EE",
         bodydark2: "#8A99AF",
-        primary: "#3C50E0",
+        primary: "#09A7B2",
         secondary: "#80CAEE",
         stroke: "#E2E8F0",
         gray: "#EFF4FB",
@@ -82,6 +82,7 @@ const config = {
         "title-xl2": ["33px", "45px"],
         "title-xxl": ["44px", "55px"],
         "title-xxl2": ["42px", "58px"],
+        "title-sm3": "22px",
       },
       spacing: {
         4.5: "1.125rem",

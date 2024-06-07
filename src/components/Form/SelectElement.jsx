@@ -30,7 +30,7 @@ const SelectElement = ({
             {value}
           </option>
           {options.map((option, index) => (
-            <option key={`${id}-${index}`} value={option.id}>
+            <option key={`${id}-${index}`} value={option.id} >
               {option.name}
             </option>
           ))}
