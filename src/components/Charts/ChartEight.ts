@@ -1,36 +1,65 @@
 import { ApexOptions } from "apexcharts";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 
-interface ChartEightState {
-  series: number[];
-}
+// Función para procesar los datos
+const processData = (data) => {
+  const channelMap = {};
 
-const ChartEight: React.FC = () => {
-  const [state, setState] = useState<ChartEightState>({
-    series: [70, 20, 10],
+  data.forEach((item) => {
+    if (!channelMap[item.channel]) {
+      channelMap[item.channel] = 0;
+    }
+    channelMap[item.channel] += parseInt(item.wonOpportunities, 10);
   });
 
-  // Update the state
-  const updateState = () => {
-    setState((prevState) => ({
-      ...prevState,
-      // Update the desired properties
-    }));
-  };
-  updateState;
+  const labels = Object.keys(channelMap);
+  const series = Object.values(channelMap);
+
+  return { labels, series };
+};
+
+const ChartEight: React.FC = () => {
+  const [state, setState] = useState({
+    series: [],
+    labels: [],
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://api.legalistas.com.ar/v1/statistics/crm?sourceChannel=all"
+        );
+        const data = await response.json();
+        const { labels, series } = processData(data);
+        setState({ labels, series });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const options: ApexOptions = {
     chart: {
       type: "donut",
     },
-    colors: ["#0FADCF", "#80CAEE", "#3C50E0"],
-    labels: ["Desktop", "Tablet", "Mobile"],
+    colors: [
+      "#0FADCF",
+      "#80CAEE",
+      "#3C50E0",
+      "#00E396",
+      "#FEB019",
+      "#FF4560",
+      "#775DD0",
+    ],
+    labels: state.labels,
     legend: {
       show: false,
       position: "bottom",
     },
-
     plotOptions: {
       pie: {
         donut: {
@@ -39,7 +68,6 @@ const ChartEight: React.FC = () => {
         },
       },
     },
-
     dataLabels: {
       enabled: false,
     },
@@ -68,7 +96,7 @@ const ChartEight: React.FC = () => {
       <div className="mb-3 justify-between gap-4 sm:flex">
         <div>
           <h4 className="text-title-sm2 font-bold text-black dark:text-white">
-            Used Devices
+            Oportunidades Ganadas por Canal
           </h4>
         </div>
         <div className="mt-2 flex items-center sm:mt-0">
@@ -116,44 +144,27 @@ const ChartEight: React.FC = () => {
       </div>
 
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="block h-4 w-4 rounded-full border-4 border-primary"></span>
-            <span className="font-medium text-black-2 dark:text-white">
-              Mobile
+        {state.labels.map((label, index) => (
+          <div className="flex items-center justify-between" key={label}>
+            <div className="flex items-center gap-2">
+              <span
+                className="block h-4 w-4 rounded-full"
+                style={{ borderColor: options.colors[index] }}
+              ></span>
+              <span className="font-medium text-black-2 dark:text-white">
+                {label}
+              </span>
+            </div>
+            <span className="inline-block rounded-md bg-primary px-1.5 py-0.5 text-xs font-medium text-white">
+              {(
+                (state.series[index] /
+                  state.series.reduce((a, b) => a + b, 0)) *
+                100
+              ).toFixed(2)}
+              %
             </span>
           </div>
-
-          <span className="inline-block rounded-md bg-primary px-1.5 py-0.5 text-xs font-medium text-white">
-            10%
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="block h-4 w-4 rounded-full border-4 border-secondary"></span>
-            <span className="font-medium text-black-2 dark:text-white">
-              Tablet
-            </span>
-          </div>
-
-          <span className="inline-block rounded-md bg-secondary px-1.5 py-0.5 text-xs font-medium text-white">
-            20%
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="block h-4 w-4 rounded-full border-4 border-meta-10"></span>
-            <span className="font-medium text-black-2 dark:text-white">
-              Desktop
-            </span>
-          </div>
-
-          <span className="inline-block rounded-md bg-meta-10 px-1.5 py-0.5 text-xs font-medium text-white">
-            70%
-          </span>
-        </div>
+        ))}
       </div>
     </div>
   );
