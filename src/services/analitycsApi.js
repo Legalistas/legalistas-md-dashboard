@@ -64,6 +64,7 @@ export const getCrmDataByYearAndMonths = async (year, months) => {
 export const getCrmDataByYearAndSeller = async (year, sellerId) => {
     try {
         const response = await api.get(`/?year=${year}&sellerId=${sellerId}`);
+        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error(`Error fetching CRM data for year ${year} and seller ${sellerId}:`, error);
@@ -100,6 +101,29 @@ export const getCrmDataByYearsAndSeller = async (years, sellerId) => {
         return response.data;
     } catch (error) {
         console.error(`Error fetching CRM data for years ${years.join(',')} and seller ${sellerId}:`, error);
+        throw error;
+    }
+};
+
+// Función para obtener datos de los vendedores por año y mes específico
+export const getSellerDataByYearAndMonth = async (year, month) => {
+    try {
+        const response = await api.get(`/seller?year=${year}&month=${month}`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching seller data for year ${year} and month ${month}:`, error);
+        throw error;
+    }
+};
+
+// Función para obtener datos de los vendedores por año
+export const getSellerDataByYear = async (year) => {
+    try {
+        console.log(year)
+        const response = await api.get(`/seller?year=${year}`);
+        return response.data;
+    } catch (error) {
+        console.error(`Error fetching seller data for year ${year}:`, error);
         throw error;
     }
 };

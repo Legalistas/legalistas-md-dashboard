@@ -1,26 +1,46 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import CircleSvg from "../../../components/Charts/CiclePercentSvg.jsx";
-import { getCrmData } from "@/services/analitycsApi.js";
+import { getCrmData, getCrmDataByYear, getCrmDataByYearAndMonth } from '@/services/analitycsApi'; // Ajusta la ruta según sea necesario
 
 const DataStatsThree = () => {
   const [leadsAnalitycs, setLeadsAnalitycs] = useState();
+  const [period, setPeriod] = useState('year');
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(new Date().getMonth());
 
   useEffect(() => {
-    const data = async () => {
+    const fetchData = async () => {
       try {
-        const analitycs = await getCrmData();
-        console.log(analitycs); // Verificar datos
-        setLeadsAnalitycs(analitycs.allTime);
+        let response;
+
+        if (period === 'month') {
+          response = await getCrmDataByYearAndMonth(year, month);
+        } else {
+          response = await getCrmDataByYear(year);
+        }
+
+        setLeadsAnalitycs(response);
+
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
       }
     };
-    data();
-  }, []);
+
+    fetchData();
+  }, [period, year, month]);
+
+  useEffect(() => {
+    console.log(leadsAnalitycs)
+  }, [leadsAnalitycs])
+
 
   const getBgColor = (percentage) => {
     return percentage >= 0 ? 'bg-meta-3' : 'bg-red-500';
+  };
+
+  const handlePeriodChange = (event) => {
+    setPeriod(event.target.value);
   };
 
   return (
@@ -33,17 +53,16 @@ const DataStatsThree = () => {
         </div>
 
         <div className="flex items-center">
-          <p className="font-medium uppercase text-black dark:text-white">
-            Short by:
-          </p>
           <div className="relative z-20 inline-block">
             <select
-              name="#"
-              id="#"
+              name="period"
+              id="period"
+              value={period}
+              onChange={handlePeriodChange}
               className="relative z-20 inline-flex appearance-none bg-transparent py-1 pl-3 pr-8 font-medium outline-none"
             >
-              <option value="">Current Week</option>
-              <option value="">Last Week</option>
+              <option value="year">Anual</option>
+              <option value="month">Mensual</option>
             </select>
             <span className="absolute right-1 top-1/2 z-10 -translate-y-1/2">
               <svg
@@ -109,7 +128,7 @@ const DataStatsThree = () => {
                   {leadsAnalitycs?.won ?? 'Loading...'}
                 </h3>
                 <span className="mt-2 flex items-center gap-2">
-                  <span className="flex items-center gap-1 rounded-md bg-meta-3 p-1 text-xs font-medium text-white">
+                  <span className={`flex items-center gap-1 rounded-md ${getBgColor(leadsAnalitycs?.percentageCreated)} p-1 text-xs font-medium text-white`}>
                     <svg
                       width="14"
                       height="15"
@@ -146,7 +165,7 @@ const DataStatsThree = () => {
                   {leadsAnalitycs?.lost ?? 'Loading...'}
                 </h3>
                 <span className="mt-2 flex items-center gap-2">
-                  <span className="flex items-center gap-1 rounded-md bg-meta-3 p-1 text-xs font-medium text-white">
+                  <span className={`flex items-center gap-1 rounded-md ${getBgColor(leadsAnalitycs?.percentageCreated)} p-1 text-xs font-medium text-white`}>
                     <svg
                       width="14"
                       height="15"
