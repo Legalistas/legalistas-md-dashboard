@@ -35,6 +35,7 @@ function Page() {
                 });
                 const opportunities = response.data;
                 
+
                 // Find the opportunity with the matching leadId
                 const opportunity = opportunities.find(op => 
                     op.leads.some(lead => lead.leadId.toString() === currentFolder)
@@ -43,6 +44,7 @@ function Page() {
                 if (opportunity) {
                     const lead = opportunity.leads.find(lead => lead.leadId.toString() === currentFolder);
                     
+
                     // Update cardData with the retrieved data
                     setCardData({
                         email: lead.customerEmail,

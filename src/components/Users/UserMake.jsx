@@ -3,9 +3,10 @@ import React, { useEffect, useState } from "react";
 import FormInput from "./Component/FormInput";
 import FormSelect from "./Component/FormSelect";
 import { FaEnvelope, FaLock, FaUser } from "react-icons/fa";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
+// import { ToastContainer, toast } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const UserMake = () => {
   const [teams, setTeams] = useState([]);
@@ -21,7 +22,7 @@ const UserMake = () => {
     team: 0,
     firstname: "",
     lastname: "",
-  })
+  });
 
   useEffect(() => {
     // Fetch the teams data from the API
@@ -63,12 +64,12 @@ const UserMake = () => {
   const handlerForm = (e) => {
     const { name, value } = e.target;
 
-    if (name === 'lastname') {
+    if (name === "lastname") {
       setCreateUser({
         ...createUser,
         lastname: value,
       });
-    } else if (name === 'firstname') {
+    } else if (name === "firstname") {
       setCreateUser({
         ...createUser,
         firstname: value,
@@ -84,21 +85,25 @@ const UserMake = () => {
         password: value,
       });
     }
-  }
+  };
 
-   /// Crear user funtion \\\
-   const handleCreateUser = async (data) => {
+  /// Crear user funtion \\\
+  const handleCreateUser = async (data) => {
     try {
-      console.log('Sending POST request with data:', data);
-      const response = await axios.post('https://api.legalistas.com.ar/v1/auth/register', data, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      console.log('Response:', response.data);
+      console.log("Sending POST request with data:", data);
+      const response = await axios.post(
+        "https://api.legalistas.com.ar/v1/auth/register",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      console.log("Response:", response.data);
       toast("¡Usuario creado exitosamente!");
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       toast("Error occurred", error.message);
     }
   };
@@ -113,7 +118,8 @@ const UserMake = () => {
         </div>
         <div className="flex w-1/2 items-center justify-end gap-2">
           <button
-            type="button" onClick={() => handleCreateUser(createUser)}
+            type="button"
+            onClick={() => handleCreateUser(createUser)}
             className="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
             Crear
@@ -123,12 +129,14 @@ const UserMake = () => {
       <div className="max-w-full">
         <form className="mx-auto max-w-full p-2.5">
           <div className="grid md:grid-cols-2 md:gap-6">
-
             <div className="group relative z-0 mb-5 w-full pb-10">
-              <label htmlFor="lastname" className="text-gray-900 mb-2 block text-sm font-medium dark:text-white">
+              <label
+                htmlFor="lastname"
+                className="text-gray-900 mb-2 block text-sm font-medium dark:text-white"
+              >
                 Apellido
               </label>
-              <div className="flex w-full absolute">
+              <div className="absolute flex w-full">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
                   <FaUser />
                 </div>
@@ -143,10 +151,13 @@ const UserMake = () => {
               </div>
             </div>
             <div className="group relative z-0 mb-5 w-full pb-10">
-              <label htmlFor="firstname" className="text-gray-900 mb-2 block text-sm font-medium dark:text-white">
+              <label
+                htmlFor="firstname"
+                className="text-gray-900 mb-2 block text-sm font-medium dark:text-white"
+              >
                 Nombre
               </label>
-              <div className="flex w-full absolute">
+              <div className="absolute flex w-full">
                 <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
                   <FaUser />
                 </div>
@@ -162,10 +173,13 @@ const UserMake = () => {
             </div>
           </div>
           <div className="group relative z-0 mb-5 w-full pb-10">
-            <label htmlFor="email" className="text-gray-900 mb-2 block text-sm font-medium dark:text-white">
+            <label
+              htmlFor="email"
+              className="text-gray-900 mb-2 block text-sm font-medium dark:text-white"
+            >
               Correo Electronico
             </label>
-            <div className="flex w-full absolute">
+            <div className="absolute flex w-full">
               <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
                 <FaEnvelope />
               </div>
@@ -180,10 +194,13 @@ const UserMake = () => {
             </div>
           </div>
           <div className="group relative z-0 mb-5 w-full pb-10">
-            <label htmlFor="password" className="text-gray-900 mb-2 block text-sm font-medium dark:text-white">
+            <label
+              htmlFor="password"
+              className="text-gray-900 mb-2 block text-sm font-medium dark:text-white"
+            >
               Contraseña
             </label>
-            <div className="flex w-full absolute">
+            <div className="absolute flex w-full">
               <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
                 <FaLock />
               </div>
@@ -198,10 +215,13 @@ const UserMake = () => {
             </div>
           </div>
           <div className="group relative z-0 mb-5 w-full pb-10">
-            <label htmlFor="repassword" className="text-gray-900 mb-2 block text-sm font-medium dark:text-white">
+            <label
+              htmlFor="repassword"
+              className="text-gray-900 mb-2 block text-sm font-medium dark:text-white"
+            >
               Repetir contraseña
             </label>
-            <div className="flex w-full absolute">
+            <div className="absolute flex w-full">
               <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5">
                 <FaLock />
               </div>

@@ -48,7 +48,7 @@ const LoginForm = () => {
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="mb-2.5 block font-medium text-black dark:text-white">
-            Email
+            Correo electrónico
           </label>
           <div className="relative">
             <input
@@ -56,7 +56,7 @@ const LoginForm = () => {
               name="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              placeholder="Introduce tu correo electrónico"
               className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
             <span className="absolute right-4 top-4">
@@ -81,7 +81,7 @@ const LoginForm = () => {
 
         <div className="mb-6">
           <label className="mb-2.5 block font-medium text-black dark:text-white">
-            Re-type Password
+            Contraseña
           </label>
           <div className="relative">
             <input
@@ -89,7 +89,7 @@ const LoginForm = () => {
               name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="6+ Characters, 1 Capital letter"
+              placeholder="Más de 6 caracteres, 1 letra mayúscula"
               className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
             <span className="absolute right-4 top-4">
@@ -119,7 +119,7 @@ const LoginForm = () => {
         <div className="mb-5">
           <input
             type="submit"
-            value="Sign In"
+            value="Ingresar"
             className="w-full cursor-pointer rounded-lg border border-primary bg-primary p-4 text-white transition hover:bg-opacity-90"
           />
         </div>
@@ -162,14 +162,14 @@ const LoginForm = () => {
               </defs>
             </svg>
           </span>
-          Sign in with Google
+          Inicia sesión con Google
         </button>
 
         <div className="mt-6 text-center">
           <p>
-            Don’t have any account?{" "}
-            <Link href="/auth/signup" className="text-primary">
-              Sign Up
+            ¿Olvidaste tu contraseña?
+            <Link href="/auth/signup" className="text-primary ml-1">
+              Recuperar
             </Link>
           </p>
         </div>

@@ -10,21 +10,21 @@
   }
 
   ::-webkit-scrollbar {
-    width: 3px;
+    width: 2px;
+    height: 2px;
   }
 
   ::-webkit-scrollbar-track {
     border-radius: 0;
-    box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.3);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.1);
     border-radius: 0;
   }
 
   ::-webkit-scrollbar-thumb:window-inactive {
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.2);
   }
 }
 
@@ -260,4 +260,43 @@ input[type="search"]::-webkit-search-cancel-button {
 
 [x-cloak] {
   display: none !important;
+}
+
+.placeholder-dragging {
+  border: 1px dashed #b7bec7;
+  background: repeating-linear-gradient(
+    45deg,
+    white,
+    white 5px,
+    #eef2f9 5px,
+    #eef2f9 10px
+  );
+  height: 120px; /* Ajusta según el tamaño de la tarjeta */
+  width: 100%;
+  /*box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);*/
+  border-radius: 0.5rem;
+
+}
+
+
+.custom-select {
+  border: 2px solid #0070f3;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 16px;
+}
+
+.custom-select__dropdown {
+  background-color: #f0f0f0;
+  border: 1px solid #0070f3;
+}
+
+.custom-select__option {
+  padding: 8px;
+  font-size: 16px;
+}
+
+.custom-select__option--selected {
+  background-color: #0070f3;
+  color: #fff;
 }

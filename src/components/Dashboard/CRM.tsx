@@ -2,7 +2,7 @@
 import React from "react";
 import DataStatsThree from "../DataStats/DataStatsThree";
 import ChartSeven from "../Charts/ChartSeven";
-import ChartEight from "../Charts/ChartEight";
+import ChartSourceChannel from "../Charts/ChartSourceChannel";
 import ChartNine from "../Charts/ChartNine";
 import LeadsReport from "../LeadsReport";
 import ToDoList from "../Todo/ToDoList";
@@ -18,7 +18,7 @@ const CRM: React.FC = () => {
         </div>
 
         <div className="col-span-12 xl:col-span-5">
-          <ChartEight />
+          <ChartSourceChannel />
         </div>
 
         <LeadsReport />

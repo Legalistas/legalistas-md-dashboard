@@ -1,14 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
+import { DragDropContext } from "@hello-pangea/dnd";
 import { useAuth } from "@/contexts/AuthContext";
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import KanbanHeader from "@/components/Crm/KanbanHeader";
-import { FaClipboardUser, FaEllipsisVertical } from "react-icons/fa6";
-import { FaCommentDots } from "react-icons/fa";
-import Link from 'next/link';
+import KanbanBoard from "@/components/Crm/KanbanBoard";
+import Loader from "@/components/common/Loader";
 
 const KanbanPipelinePage = () => {
   const { user } = useAuth();
@@ -30,10 +27,8 @@ const KanbanPipelinePage = () => {
       }
     };
 
-    if (user?.user?.id) {
-      fetchData();
-    }
-  }, [user]);
+    fetchData();
+  }, []);
 
   const handleDragEnd = async (result) => {
     if (!result.destination) return;
@@ -107,81 +102,7 @@ const KanbanPipelinePage = () => {
   return (
     <DefaultLayout>
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="mx-auto">
-          <Breadcrumb pageName="Kanban Pipeline" />
-          <KanbanHeader />
-          <div className="whitespace-nowraps flex gap-4">
-            {categories.map((column) => (
-              <Droppable key={column.id} droppableId={column.id.toString()}>
-                {(provided) => (
-                  <div
-                    className="flex h-[100%] w-80 flex-shrink-0 flex-col  rounded-lg border border-stroke bg-white p-4 pb-2.5 shadow-card dark:border-strokedark dark:bg-boxdark"
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                  >
-                    <div className="mb-4 flex items-center justify-between">
-                      <h2 className="text-lg font-semibold">{column.name}</h2>
-                      <button className="text-gray-400 hover:text-gray-600">
-                        <FaEllipsisVertical />
-                      </button>
-                    </div>
-                    <ul>
-                      {column.leads.map((lead, leadIndex) => (
-                        <Draggable
-                          key={lead.leadId}
-                          draggableId={lead.leadId.toString()}
-                          index={leadIndex}
-                        >
-                          {(provided) => (
-                            <Link //aca
-                              href={`/crm/pipeline/${lead.leadId}`}
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              className="pb-2.5"
-                            >
-                              <div className="rounded-lg border border-stroke bg-white p-4 pb-2.5 shadow-card dark:border-strokedark dark:bg-boxdark">
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center space-x-2">
-                                    <h3 className="text-md mb-2 font-bold">
-                                      {lead.name}
-                                    </h3>
-                                  </div>
-                                  <button className="text-gray-400 hover:text-gray-600">
-                                    +
-                                  </button>
-                                </div>
-                                <div className="mt-2 flex items-center justify-between"></div>
-                                <div className="mt-2 flex items-center justify-between">
-                                  <div className="text-gray-400 flex space-x-2 text-xs">
-                                    <span className="flex items-center space-x-1">
-                                      <FaCommentDots />
-                                      <span>10</span>
-                                    </span>
-                                    <span className="flex items-center space-x-1">
-                                      <FaClipboardUser />
-                                      <span>1</span>
-                                    </span>
-                                  </div>
-                                  <img
-                                    className="h-6 w-6 rounded-full"
-                                    src="https://placehold.co/600x400/EEE/31343C"
-                                    alt="User Avatar"
-                                  />
-                                </div>
-                              </div>
-                            </Link>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </ul>
-                  </div>
-                )}
-              </Droppable>
-            ))}
-          </div>
-        </div>
+        <KanbanBoard categories={categories} />
       </DragDropContext>
     </DefaultLayout>
   );

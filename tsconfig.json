@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/auth/signin/page.jsx", "src/components/TaskPopup.jsx", "lib/authOptions.js", "src/components/Header/DropdownUser.jsx", "src/components/Header/DropdownUser.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/auth/signin/page.jsx", "src/components/TaskPopup.jsx", "lib/authOptions.js", "src/components/Header/DropdownUser.jsx", "src/components/Header/DropdownUser.jsx", "src/app/calendar/page.jsx"],
   "exclude": ["node_modules"]
 }

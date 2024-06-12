@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
-import statesData from './mockData/states.json'; // Importar datos de states.json
 import { create_opportunity } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { FaUserPlus } from "react-icons/fa";
-import Modal from "./modal/Modal"
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import axios from 'axios';
-
-
+import Modal from "@/components/Modals/Modal";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
 
 const TaskPopup = (props) => {
   const [files, setFiles] = useState(null);
@@ -32,7 +29,6 @@ const TaskPopup = (props) => {
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
 
-
   // Estado para manejar los datos del formulario
   const [formData, setFormData] = useState({
     status: "open",
@@ -44,7 +40,7 @@ const TaskPopup = (props) => {
     services: {
       type: 0,
       personal_injuries: 1,
-      art: 1
+      art: 1,
     },
     email: "",
     phone: "",
@@ -62,8 +58,7 @@ const TaskPopup = (props) => {
     team: 33,
     firstname: "",
     lastname: "",
-  })
-
+  });
 
   // Lista de columnas para el kanban
   const columns = [
@@ -76,53 +71,55 @@ const TaskPopup = (props) => {
     "7-REUNIÓN DE PODER",
     "8-PENDIENTE PODER",
     "9-GANADO - TRAJO PODER",
-    "10-PERDIDA"
+    "10-PERDIDA",
   ];
 
   // Función para manejar el cambio en los inputs del formulario
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === 'states') {
+    if (name === "states") {
       setFormData({
         ...formData,
         state_id: parseInt(value),
       });
 
       // Filter localities based on the selected state
-      const filteredLocalities = localities.filter(locality => locality.state_id === parseInt(value));
+      const filteredLocalities = localities.filter(
+        (locality) => locality.state_id === parseInt(value),
+      );
       setFilterLocalities(filteredLocalities);
-    } else if (name === 'client') {
+    } else if (name === "client") {
       setFormData({
         ...formData,
         customer_id: parseInt(value),
       });
-    } else if (name === 'email') {
+    } else if (name === "email") {
       setFormData({
         ...formData,
         email: value,
       });
-    } else if (name === 'localities') {
+    } else if (name === "localities") {
       setFormData({
         ...formData,
         locality_id: parseInt(value),
       });
-    } else if (name === 'lw_in') {
+    } else if (name === "lw_in") {
       setFormData({
         ...formData,
         internal_lawyer_id: parseInt(value),
       });
-    } else if (name === 'lw_ex') {
+    } else if (name === "lw_ex") {
       setFormData({
         ...formData,
         external_lawyer_id: parseInt(value),
       });
-    } else if (name === 'phone') {
+    } else if (name === "phone") {
       setFormData({
         ...formData,
         phone: value,
       });
-    } else if (name === 'service') {
+    } else if (name === "service") {
       setFormData({
         ...formData,
         services: {
@@ -130,7 +127,7 @@ const TaskPopup = (props) => {
           type: parseInt(value),
         },
       });
-    } else if (name === 'personal_injuries') {
+    } else if (name === "personal_injuries") {
       setFormData({
         ...formData,
         services: {
@@ -138,7 +135,7 @@ const TaskPopup = (props) => {
           personal_injuries: parseInt(value),
         },
       });
-    } else if (name === 'art') {
+    } else if (name === "art") {
       setFormData({
         ...formData,
         services: {
@@ -146,39 +143,41 @@ const TaskPopup = (props) => {
           art: parseInt(value),
         },
       });
-    } else if (name === 'canalComunicacion') {
+    } else if (name === "canalComunicacion") {
       setFormData({
         ...formData,
         source_channel: parseInt(value),
       });
-    } else if (name === 'fname') {
+    } else if (name === "fname") {
       setCreateUser({
         ...createUser,
         firstname: value,
       });
-    } else if (name === 'lname') {
+    } else if (name === "lname") {
       setCreateUser({
         ...createUser,
         lastname: value,
       });
-    } else if (name === 'create_email') {
+    } else if (name === "create_email") {
       setCreateUser({
         ...createUser,
         email: value,
       });
-    } else if (name === 'pass') {
+    } else if (name === "pass") {
       setCreateUser({
         ...createUser,
         password: value,
       });
-    } else if (name === 'area') {
-      const selectedTeam = teams.find(team => team.id === parseInt(value));
+    } else if (name === "area") {
+      const selectedTeam = teams.find((team) => team.id === parseInt(value));
       setCreateUser({
         ...createUser,
         team: selectedTeam.id,
       });
-      setRole(selectedTeam.Roles.map(role => ({ id: role.id, name: role.name })));
-    } else if (name === 'role') {
+      setRole(
+        selectedTeam.Roles.map((role) => ({ id: role.id, name: role.name })),
+      );
+    } else if (name === "role") {
       setCreateUser({
         ...createUser,
         role: value,
@@ -191,29 +190,41 @@ const TaskPopup = (props) => {
     }
 
     console.log(formData);
-
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://api.legalistas.com.ar/v1/settings');
-        const users = await fetch('https://api.legalistas.com.ar/v1/user');
-        const area_rol = await fetch('https://api.legalistas.com.ar/v1/api/teams');
-        const abogados_otros = await fetch('https://api.legalistas.com.ar/v1/user');
-        const customers = await fetch('https://api.legalistas.com.ar/v1/customer')
+        const response = await fetch(
+          "https://api.legalistas.com.ar/v1/settings",
+        );
+        const users = await fetch("https://api.legalistas.com.ar/v1/user");
+        const area_rol = await fetch(
+          "https://api.legalistas.com.ar/v1/api/teams",
+        );
+        const abogados_otros = await fetch(
+          "https://api.legalistas.com.ar/v1/user",
+        );
+        const customers = await fetch(
+          "https://api.legalistas.com.ar/v1/customer",
+        );
 
         if (abogados_otros.ok && customers.ok) {
           const abogados = await abogados_otros.json();
           const customerss = await customers.json();
 
-          const abogadosInternos = abogados.filter(abogado => abogado.teamRole.role_id >= 6 && abogado.teamRole.role_id <= 7);
-          const abogadosExternos = abogados.filter(abogado => abogado.teamRole.role_id >= 1 && abogado.teamRole.role_id <= 5);
+          const abogadosInternos = abogados.filter(
+            (abogado) =>
+              abogado.teamRole.role_id >= 6 && abogado.teamRole.role_id <= 7,
+          );
+          const abogadosExternos = abogados.filter(
+            (abogado) =>
+              abogado.teamRole.role_id >= 1 && abogado.teamRole.role_id <= 5,
+          );
 
           setlawyersInt(abogadosInternos);
           setLawyersExt(abogadosExternos);
-          setCustomers(customerss)
-          
+          setCustomers(customerss);
         }
 
         if (area_rol.ok) {
@@ -222,9 +233,7 @@ const TaskPopup = (props) => {
           setTeams(filteredTeams);
         }
 
-
         if (response.ok && users.ok) {
-
           /// Response handler \\\
           const data = await response.json();
           setStates(data.states);
@@ -234,14 +243,14 @@ const TaskPopup = (props) => {
 
           /// Users handler \\\
           const userData = await users.json();
-          const formattedUsers = userData.map(user => ({
+          const formattedUsers = userData.map((user) => ({
             user_id: user.profile.user_id,
             firstname: user.profile.firstname,
-            lastname: user.profile.lastname
+            lastname: user.profile.lastname,
           }));
           setFormattedUsers(formattedUsers);
         } else {
-          throw new Error('Failed to fetch data');
+          throw new Error("Failed to fetch data");
         }
       } catch (error) {
         console.error(error);
@@ -251,29 +260,33 @@ const TaskPopup = (props) => {
     fetchData();
   }, []); // empty dependency array to run only once on component mount
 
-
   /// Crear user funtion \\\
   const handleCreateUser = async (data) => {
     try {
-      console.log('Sending POST request with data:', data);
-      const response = await axios.post('https://api.legalistas.com.ar/v1/customer/create', data, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      console.log('Response:', response.data);
+      console.log("Sending POST request with data:", data);
+      const response = await axios.post(
+        "https://api.legalistas.com.ar/v1/customer/create",
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      console.log("Response:", response.data);
       toast("¡Usuario creado exitosamente!");
-      closeModal()
+      closeModal();
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       toast("Error occurred", error.message);
     }
   };
 
   return (
     <div
-      className={`fixed left-0 top-0 z-9999 flex h-screen w-full justify-center overflow-y-scroll bg-black/80 px-4 py-5 ${props.popupOpen === true ? "block" : "hidden"
-        }`}
+      className={`fixed left-0 top-0 z-9999 flex h-screen w-full justify-center overflow-y-scroll bg-black/80 px-4 py-5 ${
+        props.popupOpen === true ? "block" : "hidden"
+      }`}
     >
       <div className="relative m-auto w-full max-w-180 rounded-xl border border-stroke bg-gray p-4 shadow-default dark:border-strokedark dark:bg-meta-4 sm:p-8 xl:p-10">
         <button
@@ -298,12 +311,14 @@ const TaskPopup = (props) => {
         </button>
 
         <form action={() => create_opportunity(formData)}>
-
           {/* /////////////////////// INICIO FORMULARIO \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
 
           {/* /////////////////////// Cliente \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="client" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label
+              htmlFor="client"
+              className="mb-2.5 block font-medium text-black dark:text-white"
+            >
               Cliente
             </label>
             <div className="flex w-full">
@@ -314,32 +329,42 @@ const TaskPopup = (props) => {
                 className="w-full rounded-sm border border-stroke bg-white px-4.5 py-3 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-boxdark dark:text-white dark:focus:border-primary"
                 defaultValue=""
               >
-                <option value="" disabled>Seleccione un usuario</option>
+                <option value="" disabled>
+                  Seleccione un usuario
+                </option>
                 {customers.map((cus) => (
-                  <option key={cus.id} value={cus.id}>{cus.profile.lastname}, {cus.profile.firstname}</option>
+                  <option key={cus.id} value={cus.id}>
+                    {cus.profile.lastname}, {cus.profile.firstname}
+                  </option>
                 ))}
               </select>
 
-              <button onClick={(e) => {
-                e.preventDefault();
-                openModal();
-              }}
-                className="w-[10%] flex justify-center items-center rounded-e-xl p-1 bg-[#4d60e3]">
-                <FaUserPlus className="text-[25px] w-full  text-white " />
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  openModal();
+                }}
+                className="flex w-[10%] items-center justify-center rounded-e-xl bg-[#4d60e3] p-1"
+              >
+                <FaUserPlus className="w-full text-[25px]  text-white " />
               </button>
 
               {/* /// Modal popup a mostrar \\\ */}
               <Modal show={showModal} onClose={closeModal}>
-                <form onSubmit={(e) => {
-                  e.preventDefault();
-                  handleCreateUser(createUser);
-                }}>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleCreateUser(createUser);
+                  }}
+                >
                   <h2>Crear cliente</h2>
 
                   <div className="flex w-full gap-3">
-
                     <div className="mb-5 w-1/2">
-                      <label htmlFor="fname" className="mb-2.5 block font-medium text-black dark:text-white">
+                      <label
+                        htmlFor="fname"
+                        className="mb-2.5 block font-medium text-black dark:text-white"
+                      >
                         Nombre
                       </label>
                       <input
@@ -353,7 +378,10 @@ const TaskPopup = (props) => {
                     </div>
 
                     <div className="mb-5 w-1/2">
-                      <label htmlFor="lname" className="mb-2.5 block font-medium text-black dark:text-white">
+                      <label
+                        htmlFor="lname"
+                        className="mb-2.5 block font-medium text-black dark:text-white"
+                      >
                         Apellido
                       </label>
                       <input
@@ -365,11 +393,13 @@ const TaskPopup = (props) => {
                         onChange={handleInputChange}
                       />
                     </div>
-
                   </div>
 
                   <div className="mb-5">
-                    <label htmlFor="create_email" className="mb-2.5 block font-medium text-black dark:text-white">
+                    <label
+                      htmlFor="create_email"
+                      className="mb-2.5 block font-medium text-black dark:text-white"
+                    >
                       Correo Electrónico
                     </label>
                     <input
@@ -383,7 +413,10 @@ const TaskPopup = (props) => {
                   </div>
 
                   <div className="mb-5">
-                    <label htmlFor="pass" className="mb-2.5 block font-medium text-black dark:text-white">
+                    <label
+                      htmlFor="pass"
+                      className="mb-2.5 block font-medium text-black dark:text-white"
+                    >
                       Contraseña
                     </label>
                     <input
@@ -397,7 +430,10 @@ const TaskPopup = (props) => {
                   </div>
 
                   <div className="mb-5">
-                    <label htmlFor="repass" className="mb-2.5 block font-medium text-black dark:text-white">
+                    <label
+                      htmlFor="repass"
+                      className="mb-2.5 block font-medium text-black dark:text-white"
+                    >
                       Repetir contraseña
                     </label>
                     <input
@@ -410,7 +446,11 @@ const TaskPopup = (props) => {
                     />
                   </div>
 
-                  <button type="button" onClick={() => handleCreateUser(createUser)} className="flex w-full items-center justify-center gap-2 rounded bg-primary px-4.5 py-2.5 font-medium text-white hover:bg-opacity-90">
+                  <button
+                    type="button"
+                    onClick={() => handleCreateUser(createUser)}
+                    className="flex w-full items-center justify-center gap-2 rounded bg-primary px-4.5 py-2.5 font-medium text-white hover:bg-opacity-90"
+                  >
                     <svg
                       className="fill-current"
                       width="20"
@@ -435,14 +475,16 @@ const TaskPopup = (props) => {
                   </button>
                 </form>
               </Modal>
-
             </div>
           </div>
 
           <div className="flex w-full gap-3">
             {/* /////////////////////// Provincia \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
             <div className="mb-5 w-1/2">
-              <label htmlFor="states" className="mb-2.5 block font-medium text-black dark:text-white">
+              <label
+                htmlFor="states"
+                className="mb-2.5 block font-medium text-black dark:text-white"
+              >
                 Provincia
               </label>
               <select
@@ -452,17 +494,24 @@ const TaskPopup = (props) => {
                 onChange={handleInputChange}
                 defaultValue=""
               >
-                <option value="" disabled>Seleccione una provincia</option>
+                <option value="" disabled>
+                  Seleccione una provincia
+                </option>
                 {/* Options from api states constant */}
                 {states.map((state) => (
-                  <option key={state.id} value={state.id}>{state.name}</option>
+                  <option key={state.id} value={state.id}>
+                    {state.name}
+                  </option>
                 ))}
               </select>
             </div>
 
             {/* /////////////////////// Ciudad \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
             <div className="mb-5 w-1/2">
-              <label htmlFor="localities" className="mb-2.5 block font-medium text-black dark:text-white">
+              <label
+                htmlFor="localities"
+                className="mb-2.5 block font-medium text-black dark:text-white"
+              >
                 Ciudad
               </label>
               <select
@@ -472,10 +521,14 @@ const TaskPopup = (props) => {
                 onChange={handleInputChange}
                 defaultValue=""
               >
-                <option value="" disabled>Seleccione un cuidad</option>
+                <option value="" disabled>
+                  Seleccione un cuidad
+                </option>
                 {/* Options from localities.json */}
                 {filterLocalities.map((locality) => (
-                  <option key={locality.id} value={locality.id}>{locality.name}</option>
+                  <option key={locality.id} value={locality.id}>
+                    {locality.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -483,7 +536,10 @@ const TaskPopup = (props) => {
 
           {/* /////////////////////// Correo Electronico \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="email" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label
+              htmlFor="email"
+              className="mb-2.5 block font-medium text-black dark:text-white"
+            >
               Correo Electrónico
             </label>
             <input
@@ -498,7 +554,10 @@ const TaskPopup = (props) => {
 
           {/* /////////////////////// Teléfono \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="phone" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label
+              htmlFor="phone"
+              className="mb-2.5 block font-medium text-black dark:text-white"
+            >
               Teléfono
             </label>
             <input
@@ -511,10 +570,12 @@ const TaskPopup = (props) => {
             />
           </div>
 
-
           {/* /////////////////////// Servicio \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="service" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label
+              htmlFor="service"
+              className="mb-2.5 block font-medium text-black dark:text-white"
+            >
               Servicío
             </label>
             <select
@@ -524,10 +585,14 @@ const TaskPopup = (props) => {
               onChange={handleInputChange}
               defaultValue=""
             >
-              <option value="" disabled>Seleccione un servicio</option>
+              <option value="" disabled>
+                Seleccione un servicio
+              </option>
               {/* Options from api services constant */}
               {services.map((service) => (
-                <option key={service.id} value={service.id}>{service.name}</option>
+                <option key={service.id} value={service.id}>
+                  {service.name}
+                </option>
               ))}
             </select>
           </div>
@@ -535,7 +600,10 @@ const TaskPopup = (props) => {
           <div className="flex w-full gap-3">
             {/* /////////////////////// Daños leves \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
             <div className="mb-5 w-1/2">
-              <label htmlFor="personal_injuries" className="mb-2.5 block font-medium text-black dark:text-white">
+              <label
+                htmlFor="personal_injuries"
+                className="mb-2.5 block font-medium text-black dark:text-white"
+              >
                 Daños leves
               </label>
               <select
@@ -545,7 +613,9 @@ const TaskPopup = (props) => {
                 onChange={handleInputChange}
                 defaultValue=""
               >
-                <option value="" disabled>Seleccione una opción</option>
+                <option value="" disabled>
+                  Seleccione una opción
+                </option>
                 <option value={1}>Si</option>
                 <option value={0}>No</option>
               </select>
@@ -553,7 +623,10 @@ const TaskPopup = (props) => {
 
             {/* /////////////////////// ART \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
             <div className="mb-5 w-1/2">
-              <label htmlFor="art" className="mb-2.5 block font-medium text-black dark:text-white">
+              <label
+                htmlFor="art"
+                className="mb-2.5 block font-medium text-black dark:text-white"
+              >
                 ART
               </label>
               <select
@@ -563,7 +636,9 @@ const TaskPopup = (props) => {
                 onChange={handleInputChange}
                 defaultValue=""
               >
-                <option value="" disabled>Seleccione una opción</option>
+                <option value="" disabled>
+                  Seleccione una opción
+                </option>
                 <option value={1}>Si</option>
                 <option value={0}>No</option>
               </select>
@@ -572,7 +647,10 @@ const TaskPopup = (props) => {
 
           {/* /////////////////////// Canal de Comunicación \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="mb-5">
-            <label htmlFor="canalComunicacion" className="mb-2.5 block font-medium text-black dark:text-white">
+            <label
+              htmlFor="canalComunicacion"
+              className="mb-2.5 block font-medium text-black dark:text-white"
+            >
               Canal de Comunicación
             </label>
             <select
@@ -582,20 +660,25 @@ const TaskPopup = (props) => {
               onChange={handleInputChange}
               defaultValue=""
             >
-              <option value="" disabled>Seleccione una opción</option>
+              <option value="" disabled>
+                Seleccione una opción
+              </option>
               {/* Options from source_channels */}
               {source_channels.map((source_channels) => (
-                <option key={source_channels.id} value={source_channels.id}>{source_channels.name}</option>
+                <option key={source_channels.id} value={source_channels.id}>
+                  {source_channels.name}
+                </option>
               ))}
             </select>
           </div>
 
-
           {/* /////////////////////// Abogados \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           <div className="flex w-full gap-3">
-
             <div className="mb-5 w-1/2">
-              <label htmlFor="lw_in" className="mb-2.5 block font-medium text-black dark:text-white">
+              <label
+                htmlFor="lw_in"
+                className="mb-2.5 block font-medium text-black dark:text-white"
+              >
                 Seleccione un abogado representante
               </label>
               <select
@@ -606,15 +689,22 @@ const TaskPopup = (props) => {
                 defaultValue=""
               >
                 {/* Options from api teams constant */}
-                <option value="" disabled>Seleccione un abogado</option>
-                {lawyersInt.map(abogado => (
-                  <option key={abogado.id} value={abogado.id}>{abogado.profile.lastname}, {abogado.profile.firstname}</option>
+                <option value="" disabled>
+                  Seleccione un abogado
+                </option>
+                {lawyersInt.map((abogado) => (
+                  <option key={abogado.id} value={abogado.id}>
+                    {abogado.profile.lastname}, {abogado.profile.firstname}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div className="mb-5 w-1/2">
-              <label htmlFor="lw_ex" className="mb-2.5 block font-medium text-black dark:text-white">
+              <label
+                htmlFor="lw_ex"
+                className="mb-2.5 block font-medium text-black dark:text-white"
+              >
                 Seleccione un abogado interno
               </label>
               <select
@@ -625,14 +715,17 @@ const TaskPopup = (props) => {
                 defaultValue=""
               >
                 {/* Options from api teams constant */}
-                <option value="" disabled>Seleccione un abogado</option>
-                {lawyersExt.map(abogado => (
-                  <option key={abogado.id} value={abogado.id}>{abogado.profile.lastname}, {abogado.profile.firstname}</option>
+                <option value="" disabled>
+                  Seleccione un abogado
+                </option>
+                {lawyersExt.map((abogado) => (
+                  <option key={abogado.id} value={abogado.id}>
+                    {abogado.profile.lastname}, {abogado.profile.firstname}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
-
 
           {/* /////////////////////// Selector de columna por las dudas \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ */}
           {/* <div className="mb-5">
@@ -648,10 +741,10 @@ const TaskPopup = (props) => {
             </select>
           </div> */}
 
-
           {/* Botón de envío */}
-          <button type="button" onClick={
-            () => {
+          <button
+            type="button"
+            onClick={() => {
               create_opportunity(formData)
                 .then(() => {
                   toast("¡Oportunidad creada exitosamente!");
@@ -659,8 +752,9 @@ const TaskPopup = (props) => {
                 .catch((error) => {
                   toast.error("Error al crear usuario: " + error.message);
                 });
-            }
-          } className="flex w-full items-center justify-center gap-2 rounded bg-primary px-4.5 py-2.5 font-medium text-white hover:bg-opacity-90">
+            }}
+            className="flex w-full items-center justify-center gap-2 rounded bg-primary px-4.5 py-2.5 font-medium text-white hover:bg-opacity-90"
+          >
             <svg
               className="fill-current"
               width="20"
@@ -684,7 +778,6 @@ const TaskPopup = (props) => {
             Enviar
           </button>
         </form>
-
       </div>
     </div>
   );
