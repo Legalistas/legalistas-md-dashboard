@@ -47,7 +47,11 @@ const Analytics = () => {
         });
 
         return () => {
-            (fp).destroy();
+            try {
+                (fp).destroy();
+            } catch (error) {
+                console.error("Se ha producido un error: ", error);
+            }
         };
     }, []);
 
