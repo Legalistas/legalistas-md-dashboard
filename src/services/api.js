@@ -43,7 +43,6 @@ export const change_to_google = async (user, email, google_access_token) => {
         body: JSON.stringify({ email, google_access_token }), // Ensure to pass an object for JSON.stringify
     });
     if (response.ok) {
-        console.log("Cuenta de Google vinculada y actualizada correctamente.");
     } else {
         console.error("Error al actualizar la cuenta de Google:", response.statusText);
     }

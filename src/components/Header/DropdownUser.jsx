@@ -59,7 +59,6 @@ const DropdownUser = () => {
       console.log("Session:", session);
       if (session.user && session.user.email) {
         const token = session.accessToken;
-        console.log("Token:", token);
         if (token) {
           console.log(user.user.id, session.user.email, session.user.id)
           change_to_google(user.user.id, session.user.email, session.user.id)

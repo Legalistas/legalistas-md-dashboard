@@ -1,23 +1,20 @@
-"use client"
+"use client";
 
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import interactionPlugin, { Draggable, DropArg } from '@fullcalendar/interaction'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import { useEffect, useState } from 'react'
+import FullCalendar from '@fullcalendar/react';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin, { Draggable, DropArg } from '@fullcalendar/interaction';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input, useDisclosure } from "@nextui-org/react";
+import { getGoogleCalendarEvents, createGoogleCalendarEvent } from '@/../lib/googleCalendar'; // Ajusta la ruta según tu estructura
 
 const CalendarPage = () => {
+  const { data: session } = useSession();
   const [idToDelete, setIdToDelete] = useState(null);
   const [hoverEvent, setHoverEvent] = useState(null);
-  const [events, setEvents] = useState([
-    { title: 'event 1', id: '1' },
-    { title: 'event 2', id: '2' },
-    { title: 'event 3', id: '3' },
-    { title: 'event 4', id: '4' },
-    { title: 'event 5', id: '5' },
-  ]);
+  const [events, setEvents] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [newEvent, setNewEvent] = useState({
     title: '',
@@ -26,10 +23,15 @@ const CalendarPage = () => {
     allDay: false,
     id: 0
   });
-  const [createdEvent, setCreatedEvent] = useState(null); 
 
   const { isOpen: showModal, onOpen: openModal, onClose: closeModal } = useDisclosure();
   const { isOpen: showDeleteModal, onOpen: openDeleteModal, onClose: closeDeleteModal } = useDisclosure();
+
+  useEffect(() => {
+    if (session) {
+      fetchEvents(session.accessToken);
+    }
+  }, [session]);
 
   useEffect(() => {
     let draggableEl = document.getElementById('draggable-el');
@@ -47,60 +49,82 @@ const CalendarPage = () => {
   }, []);
 
   useEffect(() => {
-    
-    console.log(allEvents);
-  }, [allEvents]);
+    if (session) {
+      fetchGoogleCalendarEvents();
+    }
+  }, [session]);
 
-  function handleDateClick(arg) {
+  const fetchGoogleCalendarEvents = async () => {
+    try {
+      const data = await getGoogleCalendarEvents(session.accessToken);
+      const formattedEvents = data.map(event => ({
+        id: event.id,
+        title: event.summary,
+        start: event.start.dateTime || event.start.date,
+        end: event.end.dateTime || event.end.date,
+        allDay: !event.start.dateTime,
+      }));
+      setAllEvents(formattedEvents);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
+
+  const fetchEvents = async (accessToken) => {
+    const events = await getGoogleCalendarEvents(accessToken);
+    setAllEvents(events.map(event => ({
+      id: event.id,
+      title: event.summary,
+      start: event.start.dateTime || event.start.date,
+      end: event.end.dateTime || event.end.date,
+      allDay: !event.start.dateTime,
+    })));
+  };
+
+  const handleDateClick = (arg) => {
     const startDate = new Date(arg.date);
-    startDate.setMinutes(startDate.getMinutes() - startDate.getTimezoneOffset()); // Ajustar la zona horaria
-    const formattedDate = startDate.toISOString().slice(0, 16); // Formato datetime-local
+    startDate.setMinutes(startDate.getMinutes() - startDate.getTimezoneOffset());
+    const formattedDate = startDate.toISOString().slice(0, 16);
     const endDate = new Date(startDate);
-    endDate.setDate(endDate.getDate() + 1); // Añadir un día para la fecha de finalización
-    const formattedEndDate = endDate.toISOString().slice(0, 16); // Formato datetime-local
-    new Date().toISOString().substring(0, 16) + 1
-    setNewEvent({ 
-      ...newEvent, 
-      start: formattedDate, 
-      end: formattedEndDate, 
-      allDay: arg.allDay, 
-      id: new Date().getTime().toString() 
-      });
-    openModal();
-    setCreatedEvent(newEvent); 
-  }
-  
-  
-  function addEvent(data) {
-    console.log(data);
-    const event = { 
-      ...newEvent, 
-      start: data.date.toISOString(), 
-      title: data.draggedEl.innerText, 
-      allDay: data.allDay, 
-      id: new Date().getTime().toString() 
-    };
-    setAllEvents([...allEvents, event]);
-  }
-
-  function handleDeleteModal(data) {
-    openDeleteModal();
-    setIdToDelete(data.event.id);
-  }
-
-  function handleDelete() {
-    const arrayWithoutId = allEvents.filter(event => event.id !== idToDelete);
-    setAllEvents(arrayWithoutId);
-    closeDeleteModal();
-    setIdToDelete(null);
-  }
-
-  const handleChange = (e) => {
+    endDate.setDate(endDate.getDate() + 1);
+    const formattedEndDate = endDate.toISOString().slice(0, 16);
     setNewEvent({
       ...newEvent,
-      title: e.target.value
+      start: formattedDate,
+      end: formattedEndDate,
+      allDay: arg.allDay,
+      id: new Date().getTime().toString()
     });
-  }
+    openModal();
+  };
+
+  const handleSubmit = async () => {
+    const newEvent = {
+      summary: newEvent.title,
+      start: {
+        dateTime: newEvent.start,
+        timeZone: 'America/New_York' // Ajusta esto según tu zona horaria
+      },
+      end: {
+        dateTime: newEvent.end,
+        timeZone: 'America/New_York'
+      }
+    };
+  
+    if (session) {
+      const createdEvent = await createGoogleCalendarEvent(session.accessToken, newEvent);
+      if (createdEvent) {
+        setAllEvents([...allEvents, {
+          id: createdEvent.id,
+          title: createdEvent.summary,
+          start: createdEvent.start.dateTime || createdEvent.start.date,
+          end: createdEvent.end.dateTime || createdEvent.end.date,
+          allDay: !createdEvent.start.dateTime,
+        }]);
+        closeModal();
+      }
+    }
+  };
 
   const handleDateChange = (e) => {
     setNewEvent({
@@ -109,38 +133,13 @@ const CalendarPage = () => {
     });
   }
 
-  const handleChangeDate = (e) => {
-    const { days, months, years } = e.endDelta;
-    const eventToUpdate = allEvents.find(event => event.id === hoverEvent);
-    if (eventToUpdate) {
-      const newEndDate = new Date(eventToUpdate.end);
-      newEndDate.setDate(newEndDate.getDate() + days);
-      newEndDate.setMonth(newEndDate.getMonth() + months);
-      newEndDate.setFullYear(newEndDate.getFullYear() + years);
-      const updatedEvent = { ...eventToUpdate, end: newEndDate.toISOString().substring(0, 16) };
-      setAllEvents(allEvents.map(event => event.id === hoverEvent ? updatedEvent : event));
-    }
+  const handleChange = (e) => {
+    setNewEvent({
+      ...newEvent,
+      title: e.target.value
+    });
   }
-
-  function handleSubmit(e) {
-  const updatedEndDate = new Date(newEvent.end);
-  updatedEndDate.setDate(updatedEndDate.getDate() + 1); // Sumar un día a la fecha de finalización
-
-  const updatedEvent = {
-    ...newEvent,
-    end: updatedEndDate.toISOString().slice(0, 16)
-  };
-
-  setAllEvents([...allEvents, updatedEvent]);
-  closeModal();
-  setNewEvent({
-    title: '',
-    start: '',
-    end: '',
-    allDay: false,
-    id: 0
-  });
-}
+  // ...
 
   return (
     <DefaultLayout>
