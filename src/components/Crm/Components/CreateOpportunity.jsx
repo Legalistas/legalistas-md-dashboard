@@ -8,6 +8,8 @@ import SelectLawyerElement from "@/components/Form/SelectLawyerElement";
 import AutoCompleteElement from "@/components/Form/AutoCompleteElement";
 import CreateCustomer from "@/components/Crm/Components/CreateCustomer";
 import { FaPlus } from "react-icons/fa6";
+import { create_opportunity } from "@/services/api";
+import { toast } from "react-toastify";
 
 const CreateOpportunity = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -155,23 +157,23 @@ const CreateOpportunity = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = {
-      customer_id: selectedCustomer,
-      // Añade otros campos necesarios para crear la oportunidad aquí
-    };
-
-    try {
-      // const response = await axios.post(
-      //   "https://api.legalistas.com.ar/v1/opportunity/create",
-      //   formData,
-      // );
-      console.log(formData);
-      // Maneja la respuesta según sea necesario
-    } catch (error) {
-      console.error("Error creating opportunity:", error);
-    }
+  e.preventDefault();
+  const formData = {
+    customer_id: selectedCustomer,
+    // Añade otros campos necesarios para crear la oportunidad aquí
   };
+
+  try {
+    const response = await create_opportunity(formData);
+    
+    if (response.ok){
+      toast.success("Oportunidad creada exitosamente!");
+    }
+  } catch (error) {
+    console.error("Error creating opportunity:", error);
+    toast.error("A ocurrido un error! ", error.message);
+  }
+};
 
   return (
     <>
