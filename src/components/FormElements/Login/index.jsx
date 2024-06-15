@@ -14,10 +14,9 @@ const LoginForm = () => {
     const authenticateWithToken = async () => {
       const session = await getSession();
       if (session) {
-        console.log("Session:", session);
         if (session.user && session.user.email) {
           const token = session.accessToken;
-          console.log("Token:", token);
+
           if (token) {
             signInWithEmail(session.user.email, "" , session.user.id);
           } else {
