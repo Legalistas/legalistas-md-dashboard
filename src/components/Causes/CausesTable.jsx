@@ -10,14 +10,29 @@ import {
 } from "react-table";
 import { useAuth } from "@/contexts/AuthContext";
 import ColumnFilter from "@/components/Crm/ColumnFilter";
+import DateColumnFilter from "../Crm/Filters/DateColumnFilter";
+import SelectComponent from "@/components/Form/SelectComponent";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa6";
-import { Avatar, AvatarGroup, Tooltip } from "@nextui-org/react";
+import {
+  Avatar,
+  AvatarGroup,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+  Select,
+  SelectItem,
+  SelectSection,
+  Tooltip,
+  User,
+} from "@nextui-org/react";
 import Link from "next/link";
 import { EyeIcon, DeleteIcon } from "@nextui-org/shared-icons";
 
 const CausesTable = () => {
   const { user } = useAuth();
   const [causes, setCauses] = useState([]);
+  const [proceduralStage, setProceduralStage] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -25,16 +40,10 @@ const CausesTable = () => {
       try {
         const response = await fetch("https://api.legalistas.com.ar/v1/causes");
         const data = await response.json();
+        console.log("🚀 ~ data:", data);
 
         const teamIdsWithFullAccess = [1, 2, 3, 4, 5, 6, 7];
         const restrictedRoleId = 5;
-
-        console.log(
-          "TEAM AND ROLE: ",
-          user.user.teamRole.team_id,
-          user.user.teamRole.role_id,
-        );
-        console.log("Data received from API: ", data);
 
         let filteredCauses;
 
@@ -42,22 +51,21 @@ const CausesTable = () => {
           teamIdsWithFullAccess.includes(user.user.teamRole.team_id) &&
           user.user.teamRole.role_id !== restrictedRoleId
         ) {
-          console.log("User has full access based on team ID");
           filteredCauses = data;
         } else if (user.user.teamRole.role_id === restrictedRoleId) {
-          console.log("User has restricted access based on role ID");
           filteredCauses = data.filter(
             (cause) => cause.external_lawyer_id === user.user.id,
           );
         } else {
-          console.log(
-            "User has no special access rights, apply default filtering",
-          );
           filteredCauses = data;
         }
-
-        console.log("Filtered causes: ", filteredCauses);
         setCauses(filteredCauses);
+        // Settings
+        const settings = await fetch(
+          "https://api.legalistas.com.ar/v1/settings",
+        );
+        const psData = await settings.json();
+        setProceduralStage(psData.proceduralStages);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -66,60 +74,134 @@ const CausesTable = () => {
     fetchData();
   }, []);
 
+  const handleSelectChange = (e) => {
+    const { name, value } = e.target;
+    console.log("🚀 ~ handleSelectChange ~ name, value:", name, value);
+
+    // Ensure name is correctly read from the select element
+    if (!name) {
+      console.error("Name attribute is missing in the event target");
+      return;
+    }
+
+    setUserData((prevUserData) => {
+      const newUserData = { ...prevUserData, [name]: value };
+      console.log("Updated userData:", newUserData);
+      return newUserData;
+    });
+  };
+
   const columns = useMemo(
     () => [
       {
         Header: () => <div className="w-full text-center">ID</div>,
         accessor: "internal_number",
+        Cell: ({ row }) => (
+          <div className="text-center">{row.original.internal_number}</div>
+        ),
         canFilter: true,
       },
       {
         Header: "Caratula",
         accessor: "caratula", // Define un accessor aquí
         canFilter: true,
-        Cell: ({ row }) => (
-          <div className="uppercase">
-            {`${row.original.customer.profile.lastname} ${row.original.customer.profile.firstname}`}
-            <span className="font-medium">{` C/ S/ ${row.original.process_type.name}`}</span>
-          </div>
-        ),
+        Cell: ({ row }) => {
+          const customerProfile = row.original.customer?.profile;
+          const processType = row.original.process_type?.name;
+
+          // Buscar el litigante que sea demandado
+          const demandadoLitigant = row.original.litigants.find(
+            (litigant) => litigant.role === "Demandado",
+          );
+          const litigantsProfile = demandadoLitigant?.customer?.profile;
+
+          return (
+            <div className="uppercase">
+              {customerProfile
+                ? `${customerProfile.lastname} ${customerProfile.firstname}`
+                : "No profile data"}
+              <span className="font-medium">
+                {litigantsProfile
+                  ? ` C/${litigantsProfile.lastname} ${litigantsProfile.firstname}`
+                  : ""}
+                {processType ? ` S/${processType}` : ""}
+              </span>
+            </div>
+          );
+        },
         Filter: ColumnFilter, // Asegúrate de que el filtro esté definido
       },
       {
         Header: "Nº Expediente",
         accessor: "cuij",
+        Cell: ({ row }) => (
+          <div className="text-center">{row.original.cuij}</div>
+        ),
         canFilter: true,
       },
       {
         Header: "Representantes",
         Cell: ({ row }) => (
           <>
-            <AvatarGroup isBordered className="cursor-pointer">
-              <Tooltip
-                content={`${row.original.internal_lawyer.profile.lastname} ${row.original.internal_lawyer.profile.firstname}`}
-              >
-                {row.original.internal_lawyer ? (
-                  <Avatar
-                    size="sm"
-                    name={`${row.original.internal_lawyer.profile.lastname} ${row.original.internal_lawyer.profile.firstname}`}
-                    src={row.original.internal_lawyer.profile.avatar}
-                  />
-                ) : null}
-              </Tooltip>
-              <Tooltip
-                content={`${row.original.external_lawyer.profile.lastname} ${row.original.external_lawyer.profile.firstname}`}
-              >
-                {row.original.external_lawyer ? (
-                  <Avatar
-                    size="sm"
-                    name={`${row.original.external_lawyer.profile.lastname} ${row.original.external_lawyer.profile.firstname}`}
-                    src={row.original.external_lawyer.profile.avatar}
-                  />
-                ) : null}
-              </Tooltip>
-            </AvatarGroup>
+            <Dropdown placement="start" className="cursor-pointer">
+              <DropdownTrigger>
+                {row.original.external_lawyer
+                  ? `${row.original.external_lawyer.profile.lastname} ${row.original.external_lawyer.profile.firstname}`
+                  : null}
+              </DropdownTrigger>
+              <DropdownMenu aria-label="User Actions" variant="flat">
+                <DropdownItem key="profile" className="h-14 gap-2">
+                  <p className="font-bold">Signed in as</p>
+                  <p className="font-bold">@tonyreichert</p>
+                </DropdownItem>
+                <DropdownItem key="settings">My Settings</DropdownItem>
+                <DropdownItem key="team_settings">Team Settings</DropdownItem>
+                <DropdownItem key="analytics">Analytics</DropdownItem>
+                <DropdownItem key="system">System</DropdownItem>
+                <DropdownItem key="configurations">Configurations</DropdownItem>
+                <DropdownItem key="help_and_feedback">
+                  Help & Feedback
+                </DropdownItem>
+                <DropdownItem key="logout" color="danger">
+                  Log Out
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </>
         ),
+        Filter: ColumnFilter,
+      },
+      {
+        Header: "Interno",
+        Cell: ({ row }) => (
+          <>
+            <Dropdown placement="start" className={"cursor-pointer"}>
+              <DropdownTrigger>
+                {row.original.internal_lawyer
+                  ? `${row.original.internal_lawyer.profile.lastname} ${row.original.internal_lawyer.profile.firstname}`
+                  : null}
+              </DropdownTrigger>
+              <DropdownMenu aria-label="User Actions" variant="flat">
+                <DropdownItem key="profile" className="h-14 gap-2">
+                  <p className="font-bold">Signed in as</p>
+                  <p className="font-bold">@tonyreichert</p>
+                </DropdownItem>
+                <DropdownItem key="settings">My Settings</DropdownItem>
+                <DropdownItem key="team_settings">Team Settings</DropdownItem>
+                <DropdownItem key="analytics">Analytics</DropdownItem>
+                <DropdownItem key="system">System</DropdownItem>
+                <DropdownItem key="configurations">Configurations</DropdownItem>
+                <DropdownItem key="help_and_feedback">
+                  Help & Feedback
+                </DropdownItem>
+                <DropdownItem key="logout" color="danger">
+                  Log Out
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </>
+        ),
+        Filter: ColumnFilter,
       },
       {
         Header: "Juzgado",
@@ -128,12 +210,25 @@ const CausesTable = () => {
       {
         Header: "Etapa Procesal",
         accessor: "procedural_stage.name",
+        Cell: ({ row }) => (
+          <div className="text-center">
+            <SelectComponent
+              name="proceduralstage"
+              value={row.original.procedural_stage_id}
+              onChange={handleSelectChange}
+              options={proceduralStage}
+            />
+          </div>
+        ),
       },
       {
         Header: "Fecha de Creación",
         accessor: "start_date",
+        Filter: DateColumnFilter,
         Cell: ({ row }) => (
-          <div>{new Date(row.original.start_date).toLocaleDateString()}</div>
+          <div className="text-center">
+            {new Date(row.original.start_date).toLocaleDateString()}
+          </div>
         ),
       },
       {
@@ -246,9 +341,13 @@ const CausesTable = () => {
                               </span>
                             )}
                           </div>
-                          <div>
-                            {column.canFilter ? column.render("Filter") : null}
-                          </div>
+                          {/* <div>
+                            {column.canFilter ? (
+                              column.render("Filter")
+                            ) : (
+                              <div className="mt-2"></div>
+                            )}
+                          </div> */}
                         </th>
                       );
                     })}
