@@ -19,7 +19,7 @@ const processData = (data) => {
   return { labels, series };
 };
 
-const ChartEight: React.FC = () => {
+const ChartEight = () => {
   const [state, setState] = useState({
     series: [],
     labels: [],
@@ -42,7 +42,7 @@ const ChartEight: React.FC = () => {
     fetchData();
   }, []);
 
-  const options: ApexOptions = {
+  const options = {
     chart: {
       type: "donut",
     },

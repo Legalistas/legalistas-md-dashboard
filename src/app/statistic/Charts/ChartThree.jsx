@@ -1,4 +1,4 @@
-import { ApexOptions } from "apexcharts";
+"use client"
 import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
 import { getSellerDataByYear, getSellerDataByYearAndMonth, getCrmDataByYear, getCrmDataByYearAndMonth } from '@/services/analitycsApi'; // Ajusta la ruta según sea necesario

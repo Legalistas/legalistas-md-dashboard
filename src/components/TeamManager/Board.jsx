@@ -10,8 +10,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 
-
-
 const Board = () => {
     const { user } = useAuth();
     const router = useRouter();
@@ -60,8 +58,10 @@ const Board = () => {
         const response = await setTitle(inputValue)
         if (response) {
             toast.success('Tablero creado con exito!');
-            window.location.href = '/tm'
-        }else {
+            if (typeof window !== 'undefined') {
+                window.location.href = '/tm';
+            }
+        } else {
             toast.error('Error al crear el tablero');
         }
         onClose();

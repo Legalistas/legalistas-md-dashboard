@@ -4,7 +4,6 @@ import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { SessionProvider } from 'next-auth/react';
 
 export default function DefaultLayout({
   children,

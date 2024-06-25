@@ -19,4 +19,4 @@ declare namespace md5 {
   }
 }
 
-export = md5;
+export default md5;

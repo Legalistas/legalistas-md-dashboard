@@ -1,6 +1,6 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 import { useTable, usePagination } from 'react-table';
-import axios from 'axios';
 import { getSellerDataByYear, getSellerDataByYearAndMonth } from '@/services/analitycsApi'; // Ajusta la ruta según sea necesario
 
 const TableComponent = () => {

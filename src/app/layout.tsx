@@ -2,7 +2,6 @@
 
 import { useAuth } from "../contexts/AuthContext";
 import { AuthProvider } from "../contexts/AuthContext";
-import "jsvectormap/dist/css/jsvectormap.css";
 import "flatpickr/dist/flatpickr.min.css";
 import "@/css/satoshi.css";
 import "@/css/style.css";

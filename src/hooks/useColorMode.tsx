@@ -1,17 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useLocalStorage from "./useLocalStorage";
 
 const useColorMode = () => {
   const [colorMode, setColorMode] = useLocalStorage("color-theme", "light");
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    const className = "dark";
-    const bodyClass = window.document.body.classList;
+    setIsClient(true);
+  }, []);
 
-    colorMode === "dark"
-      ? bodyClass.add(className)
-      : bodyClass.remove(className);
-  }, [colorMode]);
+  useEffect(() => {
+    if (isClient) {
+      const className = "dark";
+      const bodyClass = window.document.body.classList;
+
+      colorMode === "dark"
+        ? bodyClass.add(className)
+        : bodyClass.remove(className);
+    }
+  }, [colorMode, isClient]);
 
   return [colorMode, setColorMode];
 };
