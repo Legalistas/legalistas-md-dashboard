@@ -1,24 +1,13 @@
 
-'use client';
-import ECommerce from "@/components/Dashboard/E-commerce";
-// import { Metadata } from "next";
+;
 import DefaultLayout from "@/components/Layouts/DefaultLayout";
-import { useAuth } from '@/contexts/AuthContext';
-
-
-// export const metadata: Metadata = {
-//   title:
-//     "Next.js E-commerce Dashboard | TailAdmin - Next.js Dashboard Template",
-//   description: "This is Next.js Home for TailAdmin Dashboard Template",
-// };
 
 export default function Home() {
-  const { user, signOut } = useAuth();
 
   return (
     <>
       <DefaultLayout>
-        <ECommerce />
+        <h1>Home</h1>
       </DefaultLayout>
     </>
   );

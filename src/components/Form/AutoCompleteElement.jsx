@@ -70,7 +70,7 @@ const AutoCompleteElement = ({
         {required ? <span className="mr-1 text-red">*</span> : null}
         <span>{label}</span>
       </label>
-      <div className="mb-1 w-full rounded-lg border-[1.5px] border-stroke bg-transparent text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
+      <div className="mb-3 w-full rounded-lg border-[1.5px] border-stroke bg-transparent text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary">
         <input
           type="text"
           className="w-full rounded-lg px-5 py-3 outline-none focus:ring-2 focus:ring-blue-500"

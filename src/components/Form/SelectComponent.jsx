@@ -1,21 +1,13 @@
-const SelectElement = ({
-  id,
-  label,
-  required,
-  name,
-  options,
-  onChange,
-  disabled,
-  value,
-}) => {
+import React from "react";
+
+const SelectComponent = ({ value, onChange, options, labelName, name }) => {
   return (
     <>
       <label
-        className="text-sm font-medium text-black dark:text-white"
-        htmlFor={id}
+        htmlFor="stateId"
+        className="mb-3 block text-sm font-medium text-black dark:text-white"
       >
-        {required ? <span className="mr-1 text-red">*</span> : null}
-        <span>{label}</span>
+        {labelName}
       </label>
       <div className="relative">
         <select
@@ -35,4 +27,4 @@ const SelectElement = ({
   );
 };
 
-export default SelectElement;
+export default SelectComponent;
