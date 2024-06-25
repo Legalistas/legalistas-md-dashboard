@@ -25,7 +25,7 @@ import { TbCash, TbLayoutKanban } from "react-icons/tb";
 const links = [
   { key: "/", href: "/dashboard", text: "Inicio", icon: RxDashboard },
   { key: "", href: "title", text: "VENTAS", icon: "" },
-  { key: "crm", href: "/crm/pipeline", text: "Embudo", icon: TbLayoutKanban },
+  { key: "crm", href: "/crm", text: "Embudo", icon: TbLayoutKanban },
   { key: "crm", href: "/crm/list", text: "Lista", icon: FaList },
   { key: "customers", href: "/customers", text: "Clientes", icon: FiUsers },
   { key: "", href: "title", text: "LEGALES", icon: "" },
