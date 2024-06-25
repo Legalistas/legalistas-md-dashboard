@@ -26,7 +26,6 @@ const links = [
   { key: "/", href: "/dashboard", text: "Inicio", icon: RxDashboard },
   { key: "", href: "title", text: "VENTAS", icon: "" },
   { key: "crm", href: "/crm", text: "Embudo", icon: TbLayoutKanban },
-  { key: "crm", href: "/crm/list", text: "Lista", icon: FaList },
   { key: "customers", href: "/customers", text: "Clientes", icon: FiUsers },
   { key: "", href: "title", text: "LEGALES", icon: "" },
   { key: "causes", href: "/causes", text: "Causas", icon: GoLaw },
