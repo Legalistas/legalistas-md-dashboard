@@ -30,7 +30,7 @@ const KanbanCard = ({ lead, index }) => {
             }}
           >
             {/* Cambios echos por leonel */}
-            <Link href={`/crm/pipeline/${lead.leadId}`}>
+            <Link href={`/crm/${lead.leadId}`}>
               <div className="rounded-lg border border-stroke bg-white p-4 pb-2.5 shadow-card dark:border-strokedark dark:bg-boxdark">
                 <div className="flex items-center justify-between">
                   <span className="rounded bg-[#EFF4FB] px-2.5 py-0.5 text-xs font-medium text-black dark:bg-[#374151] dark:text-gray">

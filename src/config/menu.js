@@ -44,7 +44,7 @@ const links = [
   { key: "", href: "title", text: "APLICACIONES", icon: "" },
   { key: "cloud", href: "/cloud", text: "Nube", icon: FaCloud },
   { key: "calendar", href: "/calendar", text: "Calendario", icon: FaCalendar },
-  { key: "tasks", href: "/tasks", text: "Tareas", icon: FaTasks },
+  { key: "tasks", href: "/tm", text: "Tareas", icon: FaTasks },
   { key: "routes", href: "/routes", text: "Ruta", icon: FaRoute },
   { key: "chat", href: "/chat", text: "Chat", icon: MdForum },
   { key: "", href: "title", text: "ESTADISTICAS", icon: "" },
