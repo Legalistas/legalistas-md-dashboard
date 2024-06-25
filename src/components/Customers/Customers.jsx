@@ -1,8 +1,9 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { useTable, usePagination, useGlobalFilter } from 'react-table';
+import { Select, SelectItem } from "@nextui-org/react";
 import { CiMail, CiUser, CiMobile3, CiMap } from "react-icons/ci";
-import { getCuscomers, updateCuscomer, deleteCuscomer } from '@/services/users'; // Ajusta la ruta según sea necesario
+import { getCuscomers, updateCuscomer, deleteCuscomer, getStates } from '@/services/users'; // Ajusta la ruta según sea necesario
 import SearchInput from "./Component/SearchInput";
 import { Button, Tooltip, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Input, useDisclosure, Checkbox, Link } from "@nextui-org/react";
 import { PlusIcon } from "../Icons/PlusIcon";
@@ -10,12 +11,14 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 
 const Customers = () => {
   const [data, setData] = useState([]);
-  const [period, setPeriod] = useState('year');
-  const [year, setYear] = useState(new Date().getFullYear());
-  const [month, setMonth] = useState(new Date().getMonth() + 1); // JavaScript months are 0-based
   const [isLoading, setIsLoading] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [states, setStates] = useState([]);
+  const [selectedState, setSelectedState] = useState(null);
+  const [localities, setLocalities] = useState([]);
+  const [filteredLocalities, setFilteredLocalities] = useState([]);
+  const [selectedLocality , setSelectedLocality] = useState(null);
 
   const columns = React.useMemo(() => [
     { Header: 'ID', accessor: 'id' },
@@ -66,7 +69,6 @@ const Customers = () => {
     const fetchData = async () => {
       try {
         const response = await getCuscomers();
-        console.log(response)
         const extractedData = response.map(item => {
           const { id, email, profile: { firstname, lastname, characteristic, phone, states, localities } } = item;
           return {
@@ -79,6 +81,10 @@ const Customers = () => {
           };
         });
         setData(extractedData);
+
+        const statesAndLocalities = await getStates();
+        setStates(statesAndLocalities.states);
+        setLocalities(statesAndLocalities.localities);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -88,12 +94,23 @@ const Customers = () => {
   }, []);
 
   useEffect(() => {
-    console.log(data)
-  }, [data])
+    const filterData = async () => {
+      try {
+        const localitiesForState = localities.filter(
+          (locality) => locality.state_id == selectedState
+        );
+        setFilteredLocalities(localitiesForState);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    filterData();
+  }, [selectedState])
 
-  const handlePeriodChange = (event) => {
-    setPeriod(event.target.value);
-  };
+
+  useEffect(() => {
+    console.log(selectedCustomer)
+  }, [selectedCustomer])
 
   const handleEdit = (customer) => {
     setSelectedCustomer(customer);
@@ -266,24 +283,32 @@ const Customers = () => {
                   onChange={(e) => setSelectedCustomer({ ...selectedCustomer, phone: e.target.value })}
                   fullWidth
                 />
-                <Input
-                  endContent={
-                    <CiMap className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-                  }
+                <Select
+                  key="state"
                   label="Provincia"
-                  value={selectedCustomer?.state || ''}
-                  onChange={(e) => setSelectedCustomer({ ...selectedCustomer, state: e.target.value })}
-                  fullWidth
-                />
-                <Input
-                  endContent={
-                    <CiMap className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
-                  }
+                  className="w-1/2"
+                  onChange={(e) => setSelectedState(e.target.value)}
+                >
+                  <SelectItem value={selectedCustomer?.state || ''}>{selectedCustomer?.state}</SelectItem>
+                  {states?.map(state => (
+                    <SelectItem key={state.id}>
+                      {state.name}
+                    </SelectItem>
+                  ))}
+                </Select>
+                <Select
+                  key="locality"
                   label="Cuidad"
-                  value={selectedCustomer?.locality || ''}
-                  onChange={(e) => setSelectedCustomer({ ...selectedCustomer, locality: e.target.value })}
-                  fullWidth
-                />
+                  className="w-1/2"
+                  onChange={(e) => setSelectedLocality(e.target.value)}
+                >
+                  <SelectItem value={selectedCustomer?.locality || ''}>{selectedCustomer?.locality}</SelectItem>
+                  {filteredLocalities?.map(locality => (
+                    <SelectItem key={locality.id}>
+                      {locality.name}
+                    </SelectItem>
+                  ))}
+                </Select>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="flat" onPress={onClose}>
