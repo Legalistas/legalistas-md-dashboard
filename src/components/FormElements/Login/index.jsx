@@ -1,20 +1,45 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { signIn, useSession, getSession } from 'next-auth/react';
 import { useAuth } from "@/contexts/AuthContext";
 
 const LoginForm = () => {
+  const { data: session, data } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { signIn } = useAuth();
+  const { signIn: signInWithEmail } = useAuth();
+
+  useEffect(() => {
+    const authenticateWithToken = async () => {
+      const session = await getSession();
+      if (session) {
+        if (session.user && session.user.email) {
+          const token = session.accessToken;
+
+          if (token) {
+            signInWithEmail(session.user.email, "" , session.user.id);
+          } else {
+            console.error("Token is undefined");
+          }
+        }
+      }
+    };
+    authenticateWithToken();
+  }, [signInWithEmail]);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await signIn(email, password);
+      await signInWithEmail(email, password);
     } catch (error) {
       console.error("Error en la autenticación:", error);
     }
+  };
+
+  const handleGoogleSignIn = () => {
+    signIn("google");
   };
 
   return (
@@ -33,7 +58,6 @@ const LoginForm = () => {
               placeholder="Introduce tu correo electrónico"
               className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
-
             <span className="absolute right-4 top-4">
               <svg
                 className="fill-current"
@@ -67,7 +91,6 @@ const LoginForm = () => {
               placeholder="Más de 6 caracteres, 1 letra mayúscula"
               className="w-full rounded-lg border border-stroke bg-transparent py-4 pl-6 pr-10 text-black outline-none focus:border-primary focus-visible:shadow-none dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
             />
-
             <span className="absolute right-4 top-4">
               <svg
                 className="fill-current"
@@ -100,7 +123,11 @@ const LoginForm = () => {
           />
         </div>
 
-        <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50"
+        >
           <span>
             <svg
               width="20"

@@ -6,6 +6,7 @@ import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 // import { Metadata } from "next";
 import GuestLayout from "@/layouts/GuestLayout";
 import LoginForm from "@/components/FormElements/Login";
+import { useSession } from 'next-auth/react';
 
 // export const metadata: Metadata = {
 //   title: "Next.js SignIn Page | TailAdmin - Next.js Dashboard Template",
@@ -86,6 +87,7 @@ const SignIn = () => {
               </h2>
 
               <LoginForm />
+              
             </div>
           </div>
         </div>

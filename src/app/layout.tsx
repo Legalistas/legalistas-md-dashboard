@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 import Loader from "@/components/common/Loader";
 import { Providers } from "./providers";
 import { DragDropContext } from "@hello-pangea/dnd";
+import SessionWrapper from "@/components/SessionWrapper";
 
 export default function RootLayout({
   children,
@@ -27,16 +28,18 @@ export default function RootLayout({
   }, []);
 
   return (
-    <html lang="en">
-      <body suppressHydrationWarning={true}>
-        <Providers>
-          <AuthProvider>
-            <div className="dark:bg-boxdark-2 dark:text-bodydark">
-              {loading ? <Loader /> : children}
-            </div>
-          </AuthProvider>
-        </Providers>
-      </body>
-    </html>
+    <SessionWrapper>
+      <html lang="en">
+        <body suppressHydrationWarning={true}>
+          <Providers>
+            <AuthProvider>
+              <div className="dark:bg-boxdark-2 dark:text-bodydark">
+                {loading ? <Loader /> : children}
+              </div>
+            </AuthProvider>
+          </Providers>
+        </body>
+      </html>
+    </SessionWrapper>
   );
 }

@@ -2,8 +2,9 @@
 import React, { useState, ReactNode } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { SessionProvider } from 'next-auth/react';
 
 export default function DefaultLayout({
   children,
@@ -13,6 +14,7 @@ export default function DefaultLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   return (
     <>
+
       {/* <!-- ===== Page Wrapper Start ===== --> */}
       <div className="flex h-screen overflow-hidden">
         {/* <!-- ===== Sidebar Start ===== --> */}
@@ -27,7 +29,7 @@ export default function DefaultLayout({
 
           {/* <!-- ===== Main Content Start ===== --> */}
           <main>
-            <div className="mx-auto max-f-ull p-4 md:p-6 2xl:p-10">
+            <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
               {children}
             </div>
           </main>
@@ -37,6 +39,7 @@ export default function DefaultLayout({
       </div>
       {/* <!-- ===== Page Wrapper End ===== --> */}
       <ToastContainer />
+
     </>
   );
 }

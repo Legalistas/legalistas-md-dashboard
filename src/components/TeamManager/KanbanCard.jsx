@@ -5,12 +5,12 @@ import { FaClipboardUser } from "react-icons/fa6";
 import KanbanCardAvatar from "./KanbanCardAvatar";
 import Link from "next/link";
 
-const KanbanCard = ({ lead, index }) => {
+const KanbanCard = ({ task, index }) => {
   return (
     <>
       <Draggable
-        key={lead.leadId}
-        draggableId={lead.leadId.toString()}
+        key={task.taskId}
+        draggableId={task.taskId.toString()}
         index={index}
       >
         {(provided, snapshot) => (
@@ -30,26 +30,24 @@ const KanbanCard = ({ lead, index }) => {
             }}
           >
             {/* Cambios echos por leonel */}
-            <Link href={`/crm/${lead.leadId}`}>
+            <Link href={`/tm/board/${task.taskId}`}>
               <div className="rounded-lg border border-stroke bg-white p-4 pb-2.5 shadow-card dark:border-strokedark dark:bg-boxdark">
                 <div className="flex items-center justify-between">
-                  <span className="rounded bg-[#EFF4FB] px-2.5 py-0.5 text-xs font-medium text-black dark:bg-[#374151] dark:text-gray">
-                    {lead.customerStateName && lead.customerLocalityName
-                      ? `${lead.customerStateName.name} - ${lead.customerLocalityName.name}`
-                      : ""}
-                  </span>
+                  <h3 className="text-md mb-2 font-bold">
+                    {task.taskTitle}
+                  </h3>
                   <h3 className="cursor-pointer text-sm font-bold">
-                    <Tooltip content={`Nº de oportunidad: ${lead.leadId}`}>
-                      {lead.leadId}
+                    <Tooltip content={`Nº de oportunidad: ${task.taskId}`}>
+                      {task.taskId}
                     </Tooltip>
                   </h3>
                 </div>
 
                 <div className="mb-2 mt-2 flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <h3 className="text-md mb-2 font-bold">
-                      {lead.customerName}
-                    </h3>
+                    <span className="rounded bg-[#EFF4FB] px-2.5 py-0.5 text-xs font-medium text-black dark:bg-[#374151] dark:text-gray overflow-hidden">
+                      {task.taskDescription}
+                    </span>
                   </div>
                 </div>
 
@@ -64,7 +62,7 @@ const KanbanCard = ({ lead, index }) => {
                       <span>1</span>
                     </span>
                   </div>
-                  <KanbanCardAvatar lead={lead} />
+                  <KanbanCardAvatar task={task} />
                 </div>
               </div>
             </Link>
